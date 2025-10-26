@@ -77,3 +77,5 @@ class CustomerUserDetailView(APIView):
             return Response({
                 'message': 'Not found user'
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+

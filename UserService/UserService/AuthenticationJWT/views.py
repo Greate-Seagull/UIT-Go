@@ -65,7 +65,7 @@ class BlackListTokenRefreshView(APIView):
     
 
 
-class UserRegistration(APIView):
+class UserRegistrationView(APIView):
     permission_classes=[AllowAny]
     def post(self, request):
         serializer = CustomerUserV1Serializers(data=request.data)
@@ -106,7 +106,7 @@ def activateEmail(request, user, to_email):
 
 
 
-class ActivateAccount(APIView):
+class ActivateAccountView(APIView):
     permission_classes=[AllowAny]
     def get(self, request, uidb64, token):
         User = get_user_model()
@@ -123,3 +123,29 @@ class ActivateAccount(APIView):
             return Response({'message': 'Confirmed mail successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Confirmed mail failed'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+class UserRegisterDriverView(APIView):
+    permission_classes=[IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        if user.is_active:
+            try:
+                with transaction.atomic():
+                    user.is_driver = True
+                    user.save()
+                    serializer = CustomerUserV1Serializers(user)
+                    return Response({
+                        'message': 'You were a driver',
+                        'data': serializer.data
+                    }, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({
+                    'message': 'You are not eligible to become a driver',
+                    'error' : f'{e}'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+                'message': 'You are not eligible to become a driver',
+                'error' : 'Account does not active'
+            }, status=status.HTTP_400_BAD_REQUEST)

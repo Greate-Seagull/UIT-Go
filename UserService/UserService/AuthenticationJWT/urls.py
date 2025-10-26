@@ -5,8 +5,9 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (Me, 
                     BlackListTokenRefreshView,
-                    UserRegistration,
-                    ActivateAccount)
+                    UserRegistrationView,
+                    ActivateAccountView,
+                    UserRegisterDriverView)
 
 
 
@@ -15,7 +16,8 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users/me/', Me.as_view(), name='me'),
     path('users/logout/', BlackListTokenRefreshView.as_view(), name="logout"),
-    path('users/register/', UserRegistration.as_view(), name='user_registration'),
-    path('users/activate/<str:uidb64>/<str:token>/', ActivateAccount.as_view(), name='activate'),
+    path('users/register/', UserRegistrationView.as_view(), name='user_registration'),
+    path('users/register/driver/', UserRegisterDriverView.as_view(), name='user_register_driver'),
+    path('users/activate/<str:uidb64>/<str:token>/', ActivateAccountView.as_view(), name='activate'),
 ]
 
