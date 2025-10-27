@@ -10,6 +10,7 @@
 
 export const DriverState = {
   READY: 'READY',
+  TRANSPORTING: 'TRANSPORTING',
   UNAVAILABLE: 'UNAVAILABLE'
 } as const
 

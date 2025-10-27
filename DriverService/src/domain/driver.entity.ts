@@ -1,5 +1,6 @@
 export enum DriverState {
 	READY = "READY",
+	TRANSPORTING = "TRANSPORTING",
 	UNAVAILABLE = "UNAVAILABLE",
 }
 

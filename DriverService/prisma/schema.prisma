@@ -21,5 +21,6 @@ model Driver {
 
 enum DriverState {
   READY
+  TRANSPORTING
   UNAVAILABLE
 }

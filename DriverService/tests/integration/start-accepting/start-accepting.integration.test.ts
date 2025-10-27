@@ -1,8 +1,7 @@
 import request from "supertest";
-import app from "../../src/app";
+import app from "../../../src/app";
 import Request from "superagent/lib/node/response";
-import { DriverState } from "../../src/domain/driver.entity";
-import { prisma } from "../../src/composition-root";
+import { DriverState } from "../../../src/domain/driver.entity";
 
 describe("Start accepting integration test", () => {
 	let path: string = "/drivers/1/state";
@@ -19,7 +18,7 @@ describe("Start accepting integration test", () => {
 			expect(output.status).toBe(200);
 		});
 
-		it("Should return status 'ready'", () => {
+		it("Should return state 'ready'", () => {
 			expect(output.body).toHaveProperty("state", DriverState.READY);
 		});
 	});
@@ -27,7 +26,7 @@ describe("Start accepting integration test", () => {
 	describe("Abnormal case", () => {
 		describe("Unexisting id case", () => {
 			beforeAll(async () => {
-				path = "/drivers/123/state";
+				path = "/drivers/-1/state";
 				input = { state: "ready" };
 				output = await request(app).put(path).send(input);
 			});
@@ -35,7 +34,7 @@ describe("Start accepting integration test", () => {
 			it("Should return error message", () => {
 				expect(output.body).toHaveProperty(
 					"message",
-					"Cannot find driver with id: 123"
+					"Cannot find driver with id: -1"
 				);
 			});
 		});
