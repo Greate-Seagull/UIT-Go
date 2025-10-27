@@ -1,5 +1,6 @@
 import { DriverState } from "../domain/driver.entity";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
+import { TransactionManager } from "../infrastructure/repositories/transaction";
 
 export class StartAcceptingUsecaseInput {
 	id!: number;
@@ -11,7 +12,10 @@ export class StartAcceptingUsecaseOutput {
 }
 
 export class StartAcceptingUsecase {
-	constructor(private driverRepository: DriverRepository) {}
+	constructor(
+		private driverRepository: DriverRepository,
+		private transactionManager: TransactionManager
+	) {}
 
 	async execute(
 		input: StartAcceptingUsecaseInput
@@ -24,7 +28,11 @@ export class StartAcceptingUsecase {
 
 		driver.state = DriverState.READY;
 
-		const updatedDriver = await this.driverRepository.save(driver);
+		const updatedDriver = await this.transactionManager.transaction(
+			async (transaction) => {
+				return await this.driverRepository.save(transaction, driver);
+			}
+		);
 
 		let result = new StartAcceptingUsecaseOutput(updatedDriver.state);
 		return result;
