@@ -10,6 +10,7 @@ sequenceDiagram
     UI->>+SS: Request
     SS->>+DR: Get driver by ID
     DR-->>-SS: Driver
+    SS->>SS: Check if driver exists
     SS->>+DE: Change state to "ready"
     DE-->>-SS: 
     SS->>+DR: Save driver

@@ -1,5 +1,6 @@
 export enum DriverState {
-	Ready,
+	READY = "READY",
+	UNAVAILABLE = "UNAVAILABLE",
 }
 
 export class Driver {
@@ -11,11 +12,11 @@ export class Driver {
 		this._id = value;
 	}
 
-	private _state?: DriverState | undefined;
-	public get state(): DriverState | undefined {
+	private _state!: DriverState;
+	public get state(): DriverState {
 		return this._state;
 	}
-	public set state(value: DriverState | undefined) {
+	public set state(value: DriverState) {
 		this._state = value;
 	}
 }
