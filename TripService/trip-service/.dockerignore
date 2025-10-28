@@ -1,0 +1,19 @@
+# Build artifacts
+build/
+out/
+target/
+.gradle/
+
+# Git & IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Docs & OS junk
+.DS_Store
+README.md
+
+# Local env files
+.env
+application-local.yml
