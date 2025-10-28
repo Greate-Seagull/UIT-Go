@@ -39,3 +39,9 @@ docker-compose.override.yml
 
 ### Others ###
 node_modules/
+
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
