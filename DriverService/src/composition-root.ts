@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "./generated/client/client";
 import { StartAcceptingUsecase } from "./application/start-accepting.usecase";
 import { DriverRepository } from "./infrastructure/repositories/driver.repository";

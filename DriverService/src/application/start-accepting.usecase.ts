@@ -4,7 +4,6 @@ import { TransactionManager } from "../infrastructure/repositories/transaction";
 
 export class StartAcceptingUsecaseInput {
 	id!: number;
-	state!: string;
 }
 
 export class StartAcceptingUsecaseOutput {
@@ -20,9 +19,6 @@ export class StartAcceptingUsecase {
 	async execute(
 		input: StartAcceptingUsecaseInput
 	): Promise<StartAcceptingUsecaseOutput> {
-		if (input.state != "ready")
-			throw Error(`Expect driver state: ${DriverState.READY}`);
-
 		let driver = await this.driverRepository.getById(input.id);
 		if (!driver) throw Error(`Cannot find driver with id: ${input.id}`);
 

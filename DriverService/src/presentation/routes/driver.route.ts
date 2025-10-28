@@ -6,7 +6,7 @@ import {
 
 const router = Router();
 
-router.put("/:driverId/state", controlStartAccepting);
+router.put("/me/start", controlStartAccepting);
 router.put("/:driverId/accept", controlAcceptTrip);
 
 export default router;
