@@ -6,8 +6,8 @@ import { prisma } from "../../../src/composition-root";
 import { driver } from "./accept-trip.test-data";
 
 describe("Accept trip integration test", () => {
-	let path = `/drivers/${driver.id}/accept`;
-	let input;
+	let path = "/api/drivers/me/accept";
+	let input = { driverId: driver.id, tripId: 1 };
 	let output: Request;
 
 	beforeAll(async () => {
@@ -20,7 +20,6 @@ describe("Accept trip integration test", () => {
 
 	describe("Normal case", () => {
 		beforeAll(async () => {
-			input = { tripId: 1 };
 			output = await request(app).put(path).send(input);
 		});
 
@@ -37,21 +36,6 @@ describe("Accept trip integration test", () => {
 	});
 
 	describe("Abnormal case", () => {
-		describe("Unexisting user case", () => {
-			beforeAll(async () => {
-				path = `/drivers/-1/accept`;
-				input = { tripId: 1 };
-				output = await request(app).put(path).send(input);
-			});
-
-			it("Should return error message", () => {
-				expect(output.body).toHaveProperty(
-					"message",
-					"Cannot find driver with id: -1"
-				);
-			});
-		});
-
 		describe("Non-ready state case", () => {
 			beforeAll(async () => {
 				await prisma.driver.update({
@@ -59,8 +43,6 @@ describe("Accept trip integration test", () => {
 					data: { state: DriverState.UNAVAILABLE },
 				});
 
-				path = `/drivers/2/accept`;
-				input = { tripId: 1 };
 				output = await request(app).put(path).send(input);
 			});
 

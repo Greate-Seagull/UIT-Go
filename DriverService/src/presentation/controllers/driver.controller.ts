@@ -17,12 +17,8 @@ export async function controlStartAccepting(req: Request, res: Response) {
 }
 
 export async function controlAcceptTrip(req: Request, res: Response) {
-	let input = new AcceptTripUsecaseInput();
-	input.driverId = Number(req.params.driverId);
-	input.tripId = Number(req.body.tripId);
-
 	try {
-		const result = await acceptTripUsecase.execute(input);
+		const result = await acceptTripUsecase.execute(req.body);
 		res.json(result);
 	} catch (e: any) {
 		res.json({ message: e.message });

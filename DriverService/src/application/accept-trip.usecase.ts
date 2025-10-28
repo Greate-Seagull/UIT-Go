@@ -26,7 +26,7 @@ export class AcceptTripUsecase {
 			throw Error(`The driver is not in ready state: ${driver.state}`);
 
 		console.log(
-			`PUT /trips/${input.tripId}/assign | data: { driverId: ${input.driverId} }`
+			`PUT /api/trips/${input.tripId}/assign | data: { driverId: ${input.driverId} }`
 		);
 
 		driver.state = DriverState.TRANSPORTING;
