@@ -3,7 +3,7 @@ import app from "../../../src/app";
 import Request from "superagent/lib/node/response";
 import { DriverState } from "../../../src/domain/driver.entity";
 import { prisma } from "../../../src/composition-root";
-import { driver } from "../accept-trip/accept-trip.test-data";
+import { driver } from "./accept-trip.test-data";
 
 describe("Accept trip integration test", () => {
 	let path = "/api/drivers/me/accept";

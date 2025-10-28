@@ -1,14 +1,13 @@
 import request from "supertest";
 import app from "../../../src/app";
-import Request from "superagent/lib/node/response";
-import { DriverState } from "../../../src/domain/driver.entity";
 import { prisma } from "../../../src/composition-root";
-import { driver } from "../accept-trip/accept-trip.test-data";
+import { driver } from "./complete-trip.test-data";
+import { DriverState } from "../../../src/domain/driver.entity";
 
-describe("Accept trip integration test", () => {
-	let path = "/api/drivers/me/accept";
-	let input = { driverId: driver.id, tripId: 1 };
-	let output: Request;
+describe("Complete trip integration test", () => {
+	let path = "/api/drivers/me/complete";
+	let input = { driverId: driver.id, userId: 1, tripId: 1 };
+	let output: any;
 
 	beforeAll(async () => {
 		await prisma.driver.create({ data: driver as any });
@@ -27,11 +26,8 @@ describe("Accept trip integration test", () => {
 			expect(output.status).toBe(200);
 		});
 
-		it("Should return state 'transporting'", () => {
-			expect(output.body).toHaveProperty(
-				"state",
-				DriverState.TRANSPORTING
-			);
+		it("Should return state 'ready'", () => {
+			expect(output.body).toHaveProperty("state", DriverState.READY);
 		});
 	});
 
@@ -49,7 +45,7 @@ describe("Accept trip integration test", () => {
 			it("Should return error message", () => {
 				expect(output.body).toHaveProperty(
 					"message",
-					"The driver is not in ready state: UNAVAILABLE"
+					"The driver is not in transporting state: UNAVAILABLE"
 				);
 			});
 		});

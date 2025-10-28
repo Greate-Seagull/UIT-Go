@@ -7,6 +7,7 @@ import { TransactionManager } from "./infrastructure/repositories/transaction";
 import { AcceptTripUsecase } from "./application/accept-trip.usecase";
 import { UpdatePositionUsecase } from "./application/update-position.usecase";
 import { DriverPositionRepository } from "./infrastructure/repositories/driver-position.repository";
+import { CompleteTripUsecase } from "./application/complete-trip.usecase";
 
 export const prisma = new PrismaClient();
 export const redis = new Redis();
@@ -25,4 +26,8 @@ export const acceptTripUsecase = new AcceptTripUsecase(
 );
 export const updatePositionUsecase = new UpdatePositionUsecase(
 	driverPositionRepository
+);
+export const completeTripUsecase = new CompleteTripUsecase(
+	driverRepository,
+	transaction
 );

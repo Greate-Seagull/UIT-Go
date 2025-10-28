@@ -2,6 +2,7 @@ import { AcceptTripUsecaseInput } from "../../application/accept-trip.usecase";
 import { StartAcceptingUsecaseInput } from "../../application/start-accepting.usecase";
 import {
 	acceptTripUsecase,
+	completeTripUsecase,
 	startAcceptingUsecase,
 	updatePositionUsecase,
 } from "../../composition-root";
@@ -28,9 +29,13 @@ export async function controlAcceptTrip(req: Request, res: Response) {
 	}
 }
 
-export async function controlUpdatePosition(req: Request, res: Response) {
-	const result = await updatePositionUsecase.execute(req.body);
-	res.json(result);
+export async function controlCompleteTrip(req: Request, res: Response) {
+	try {
+		const result = await completeTripUsecase.execute(req.body);
+		res.json(result);
+	} catch (e: any) {
+		res.json({ message: e.message });
+	}
 }
 
 export const updatePositionProcedure = trpc.procedure
