@@ -3,6 +3,7 @@ import { StartAcceptingUsecaseInput } from "../../application/start-accepting.us
 import {
 	acceptTripUsecase,
 	startAcceptingUsecase,
+	updatePositionUsecase,
 } from "../../composition-root";
 
 import { Request, Response } from "express";
@@ -23,4 +24,9 @@ export async function controlAcceptTrip(req: Request, res: Response) {
 	} catch (e: any) {
 		res.json({ message: e.message });
 	}
+}
+
+export async function controlUpdatePosition(req: Request, res: Response) {
+	const result = await updatePositionUsecase.execute(req.body);
+	res.json(result);
 }

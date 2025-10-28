@@ -5,12 +5,9 @@ export enum DriverState {
 }
 
 export class Driver {
-	private _id!: number;
+	private _id: number;
 	public get id(): number {
 		return this._id;
-	}
-	public set id(value: number) {
-		this._id = value;
 	}
 
 	private _state!: DriverState;
@@ -19,5 +16,13 @@ export class Driver {
 	}
 	public set state(value: DriverState) {
 		this._state = value;
+	}
+
+	constructor(id: number) {
+		this._id = id;
+	}
+
+	static create(id: number) {
+		return new Driver(id);
 	}
 }
