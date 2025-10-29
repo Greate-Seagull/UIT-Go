@@ -15,7 +15,7 @@ class CustomerUser(AbstractUser):
     objects = CustomerUserManager()
 
     class Meta:
-        db_table = 'CustomUser'
+        db_table = 'customuser'
         
 
 
