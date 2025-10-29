@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-
+from .manages import CustomerUserManager
 class CustomerUser(AbstractUser):
     username = models.CharField(max_length=50, unique=True, blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
@@ -11,7 +11,8 @@ class CustomerUser(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS= ['username']
+    REQUIRED_FIELDS= []
+    objects = CustomerUserManager()
 
     class Meta:
         db_table = 'CustomUser'
