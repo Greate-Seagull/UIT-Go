@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/driver/offers")
+@RequestMapping("/trip/offers")
 public class DriverOfferController {
     private final OfferRepository offerRepo;
     private final TripRepository tripRepo;
