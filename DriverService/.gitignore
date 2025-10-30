@@ -157,4 +157,4 @@ dist
 .history
 .ionide
 
-/src/generated/prisma
+/client

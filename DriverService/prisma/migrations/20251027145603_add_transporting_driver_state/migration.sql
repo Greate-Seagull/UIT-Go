@@ -1,2 +1,0 @@
--- AlterEnum
-ALTER TYPE "DriverState" ADD VALUE 'TRANSPORTING';
