@@ -1,0 +1,24 @@
+
+version: "3.9"
+services:
+  trip-postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=tripdb
+    ports: ["5434:5432"]
+    volumes: [ "trippg:/var/lib/postgresql/data" ]
+
+  trip-service:
+    build: ./trip-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://trip-postgres:5432/tripdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=pass
+      - EXTERNAL_DRIVER-SERVICE_BASE-URL=http://localhost:8083
+    depends_on: [ trip-postgres ]
+    ports: [ "8082:8082" ]
+
+volumes:
+  trippg: {}
