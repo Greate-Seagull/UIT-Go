@@ -1,0 +1,252 @@
+{
+  "info": {
+    "name": "UIT-Go TripService",
+    "_postman_id": "tripservice-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Estimate Fare",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/pricing/estimate",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "pricing",
+            "estimate"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"pickupLat\": 16.06, \"pickupLng\": 108.21, \"dropoffLat\": 16.05, \"dropoffLng\": 108.23, \"timeOfDay\": \"PEAK\"}"
+        }
+      }
+    },
+    {
+      "name": "Create Trip",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "101"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/trips",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"pickupLat\": 16.06, \"pickupLng\": 108.21, \"dropoffLat\": 16.05, \"dropoffLng\": 108.23}"
+        }
+      }
+    },
+    {
+      "name": "Get Trip",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8082/trips/{{tripId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips",
+            "{{tripId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cancel Trip",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "101"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/trips/{{tripId}}/cancel",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips",
+            "{{tripId}}",
+            "cancel"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"reason\": \"CHANGE_OF_PLAN\"}"
+        }
+      }
+    },
+    {
+      "name": "Driver Offers - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Driver-Id",
+            "value": "201"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/driver/offers",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "driver",
+            "offers"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driver Offer Accept",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Driver-Id",
+            "value": "201"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/driver/offers/{{offerId}}/accept",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "driver",
+            "offers",
+            "{{offerId}}",
+            "accept"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Start Trip",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Driver-Id",
+            "value": "201"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/trips/{{tripId}}/start",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips",
+            "{{tripId}}",
+            "start"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Complete Trip",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Driver-Id",
+            "value": "201"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/trips/{{tripId}}/complete",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips",
+            "{{tripId}}",
+            "complete"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rate Trip",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "101"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/trips/{{tripId}}/rating",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "trips",
+            "{{tripId}}",
+            "rating"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"rating\": 5, \"comment\": \"Great ride!\"}"
+        }
+      }
+    }
+  ]
+}
