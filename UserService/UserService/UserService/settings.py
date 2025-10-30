@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'UserService.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'PORT': os.environ.get('DB_PORT'),
-        'HOST': os.environ.get('DB_HOST')
+        'NAME': os.environ.get('USER_SERVICE_DB_NAME'),
+        'USER': os.environ.get('USER_SERVICE_DB_USER'),
+        'PASSWORD': os.environ.get('USER_SERVICE_DB_PASSWORD'),
+        'PORT': os.environ.get('USER_SERVICE_DB_PORT'),
+        'HOST': os.environ.get('USER_SERVICE_DB_HOST')
     }
 }
 
