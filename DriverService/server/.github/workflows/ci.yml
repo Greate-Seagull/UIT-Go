@@ -1,0 +1,47 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        services:
+            redis:
+                image: redis:7
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 5s
+                    --health-timeout 3s
+                    --health-retries 5
+
+        steps:
+            - name: Clone repo to vm
+              uses: actions/checkout@v4
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run ESLint
+              run: npm run lint --if-present
+
+            - name: Build
+              run: npm run build
+
+            - name: Test
+              env:
+                  REDIS_HOST: localhost
+                  REDIS_PORT: 6379
+              run: npm test
