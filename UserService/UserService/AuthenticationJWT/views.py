@@ -61,7 +61,7 @@ class BlackListTokenRefreshView(APIView):
     def post(self, request):
         token = RefreshToken(request.data.get('refresh'))
         token.blacklist()
-        return Response("Success")
+        return Response({'message': 'Logout success'}, status=status.HTTP_200_OK)
     
 
 
