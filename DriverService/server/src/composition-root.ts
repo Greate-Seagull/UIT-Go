@@ -1,4 +1,4 @@
-import "dotenv/config";
+import { config } from "./config/config";
 import Redis from "ioredis";
 import { PrismaClient } from "./generated/client/client";
 import { StartAcceptingUsecase } from "./application/start-accepting.usecase";
@@ -10,7 +10,10 @@ import { DriverPositionRepository } from "./infrastructure/repositories/driver-p
 import { CompleteTripUsecase } from "./application/complete-trip.usecase";
 
 export const prisma = new PrismaClient();
-export const redis = new Redis();
+export const redis = new Redis(
+	config.redis.REDIS_PORT,
+	config.redis.REDIS_HOST
+);
 
 const transaction = new TransactionManager(prisma);
 const driverRepository = new DriverRepository(prisma);

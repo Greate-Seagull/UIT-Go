@@ -157,4 +157,5 @@ dist
 .history
 .ionide
 
-/src/generated/prisma
+/src/generated
+# /src/generated/prisma

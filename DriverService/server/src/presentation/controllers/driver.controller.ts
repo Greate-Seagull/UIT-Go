@@ -1,5 +1,3 @@
-import { AcceptTripUsecaseInput } from "../../application/accept-trip.usecase";
-import { StartAcceptingUsecaseInput } from "../../application/start-accepting.usecase";
 import {
 	acceptTripUsecase,
 	completeTripUsecase,

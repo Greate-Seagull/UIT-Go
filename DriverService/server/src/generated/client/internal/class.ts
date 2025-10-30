@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "D:\\git-repo\\UIT-Go\\DriverService\\src\\generated\\client",
+      "value": "D:\\git-repo\\UIT-Go\\DriverService\\server\\src\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -36,7 +36,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\git-repo\\UIT-Go\\DriverService\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\git-repo\\UIT-Go\\DriverService\\server\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../prisma",
@@ -46,6 +46,7 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

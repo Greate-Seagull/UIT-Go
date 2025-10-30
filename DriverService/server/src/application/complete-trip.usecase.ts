@@ -1,4 +1,3 @@
-import { driverPositionInput } from "../../tests/integration/update-position/update-position.test-data";
 import { DriverState } from "../domain/driver.entity";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
 import { TransactionManager } from "../infrastructure/repositories/transaction";

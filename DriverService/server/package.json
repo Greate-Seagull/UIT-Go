@@ -18,8 +18,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"start": "node dist/index.js",
-		"test": "jest --roots=dist/tests"
+		"start": "node build/index.js",
+		"test": "jest --roots=build/tests"
 	},
 	"dependencies": {
 		"@prisma/client": "^6.18.0",
