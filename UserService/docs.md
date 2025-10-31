@@ -25,7 +25,7 @@ Lấy danh sách tất cả người dùng trong hệ thống.Phản hồi thàn
 
 
 # POST http://127.0.0.1:8000/api/v1/users/
-Tạo một người dùng mới.Nội dung yêu cầu (Request Body): (JSON)
+Tạo một người dùng mới.Nội dung yêu cầu (Request Body)PO: (JSON)
 ```sh
 {
     "email": "newuser@example.com",
