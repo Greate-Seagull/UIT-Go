@@ -26,7 +26,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
+# See https://docs.docker.com/go/dockerfile-user-bes    t-practices/
 ARG UID=10001
 RUN adduser \
     --disabled-password \
