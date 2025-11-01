@@ -1,4 +1,3 @@
-# docker-compose.yml
 services:
   trip-postgres:
     image: postgres:16
