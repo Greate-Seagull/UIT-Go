@@ -1,24 +1,28 @@
-
-version: "3.9"
+# docker-compose.yml
 services:
   trip-postgres:
     image: postgres:16
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=tripdb
-    ports: ["5434:5432"]
-    volumes: [ "trippg:/var/lib/postgresql/data" ]
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: tripdb
+    ports:
+      - "5434:5432"            # host:container (tùy bạn có cần expose ra host)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d tripdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   trip-service:
-    build: ./trip-service
+    build: .
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://trip-postgres:5432/tripdb
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=pass
-      - EXTERNAL_DRIVER-SERVICE_BASE-URL=http://localhost:8083
-    depends_on: [ trip-postgres ]
-    ports: [ "8082:8082" ]
-
-volumes:
-  trippg: {}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://trip-postgres:5432/tripdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      trip-postgres:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
