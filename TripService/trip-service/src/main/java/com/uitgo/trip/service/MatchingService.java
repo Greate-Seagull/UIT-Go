@@ -34,7 +34,7 @@ public class MatchingService {
             return; // vẫn ở FINDING_DRIVER
         }
         Long driverId = Long.valueOf(drivers.get(0).get("driverId").toString());
-        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING, Instant.now().plusSeconds(15), Instant.now());
+        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING, Instant.now().plusSeconds(15 * 60), Instant.now());
         offerRepo.save(offer);
         trip.setStatus(TripStatus.OFFERING);
         tripRepo.save(trip);

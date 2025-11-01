@@ -29,6 +29,7 @@ export class CompleteTripUsecase {
 				`The driver is not in transporting state: ${driver.state}`
 			);
 
+		console.log(`POST /trips/${input.tripId}/complete`);
 		await this.tripApiClient.completeTrip(input.driverId, input.tripId);
 
 		driver.state = DriverState.READY;

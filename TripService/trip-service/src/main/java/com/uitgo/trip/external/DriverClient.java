@@ -13,7 +13,7 @@ import java.util.Map;
 public class DriverClient {
     private final RestClient rest;
 
-    public DriverClient(@Value("${external.driver-service.base-url:http://localhost:8083}") String baseUrl) {
+    public DriverClient(@Value("${external.driver-service.base-url:http://localhost:3000}") String baseUrl) {
         this.rest = RestClient.builder().baseUrl(baseUrl).build();
     }
 
@@ -28,6 +28,7 @@ public class DriverClient {
                         .build())
                 .retrieve()
                 .toEntity(List.class);
+        System.out.println(res);
         return res.getBody();
     }
 }

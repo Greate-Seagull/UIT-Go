@@ -30,6 +30,7 @@ class CompleteTripUsecase {
             throw Error(`Cannot find driver with id: ${input.driverId}`);
         if (driver.state != driver_entity_1.DriverState.TRANSPORTING)
             throw Error(`The driver is not in transporting state: ${driver.state}`);
+        console.log(`POST /trips/${input.tripId}/complete`);
         await this.tripApiClient.completeTrip(input.driverId, input.tripId);
         driver.state = driver_entity_1.DriverState.READY;
         const updatedDriver = await this.transactionManager.transaction(async (transaction) => {
