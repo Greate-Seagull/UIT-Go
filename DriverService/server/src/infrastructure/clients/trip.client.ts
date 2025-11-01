@@ -3,9 +3,9 @@ import { AxiosInstance } from "axios";
 export class TripApiClient {
 	constructor(private readonly axios: AxiosInstance) {}
 
-	async assignDriver(driverId: number, tripId: number) {
+	async assignDriver(driverId: number, offerId: number) {
 		return await this.axios.post(
-			`/trip/offers/${tripId}/accept`,
+			`/trip/offers/${offerId}/accept`,
 			{},
 			{
 				headers: {

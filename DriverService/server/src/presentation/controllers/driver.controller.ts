@@ -10,6 +10,7 @@ import { Request, Response } from "express";
 import { trpc } from "../../trpc";
 import { z } from "zod";
 import { SearchDriverUsecaseInput } from "../../application/search-driver.usecase";
+import { AcceptTripUsecaseInput } from "../../application/accept-trip.usecase";
 
 export async function controlStartAccepting(req: Request, res: Response) {
 	try {
@@ -22,7 +23,11 @@ export async function controlStartAccepting(req: Request, res: Response) {
 
 export async function controlAcceptTrip(req: Request, res: Response) {
 	try {
-		const result = await acceptTripUsecase.execute(req.body);
+		let input = new AcceptTripUsecaseInput();
+		input.driverId = Number(req.body.driverId);
+		input.offerId = Number(req.body.offerId);
+
+		const result = await acceptTripUsecase.execute(input);
 		res.json(result);
 	} catch (e: any) {
 		res.json({ message: e.message });

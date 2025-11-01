@@ -6,8 +6,8 @@ class TripApiClient {
     constructor(axios) {
         this.axios = axios;
     }
-    async assignDriver(driverId, tripId) {
-        return await this.axios.post(`/trip/offers/${tripId}/accept`, {}, {
+    async assignDriver(driverId, offerId) {
+        return await this.axios.post(`/trip/offers/${offerId}/accept`, {}, {
             headers: {
                 "X-Driver-Id": String(driverId),
             },

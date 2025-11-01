@@ -35,22 +35,24 @@ async function testRedis() {
 }
 
 async function testPrisma() {
-	let driver1 = Driver.create(11);
-	driver1.state = DriverState.READY;
-	let driver2 = Driver.create(11);
-	driver2.state = DriverState.READY;
-	let driver3 = Driver.create(11);
-	driver3.state = DriverState.READY;
-	let driver4 = Driver.create(11);
-	driver4.state = DriverState.READY;
-	let driver5 = Driver.create(11);
-	driver5.state = DriverState.READY;
+	console.log(await prisma.driver.findMany());
 
-	await driverRepository.save(null, driver1);
-	await driverRepository.save(null, driver2);
-	await driverRepository.save(null, driver3);
-	await driverRepository.save(null, driver4);
-	await driverRepository.save(null, driver5);
+	// let driver1 = Driver.create(11);
+	// driver1.state = DriverState.READY;
+	// let driver2 = Driver.create(12);
+	// driver2.state = DriverState.READY;
+	// let driver3 = Driver.create(13);
+	// driver3.state = DriverState.READY;
+	// let driver4 = Driver.create(14);
+	// driver4.state = DriverState.READY;
+	// let driver5 = Driver.create(15);
+	// driver5.state = DriverState.READY;
+
+	// await driverRepository.add(null, driver1);
+	// await driverRepository.add(null, driver2);
+	// await driverRepository.add(null, driver3);
+	// await driverRepository.add(null, driver4);
+	// await driverRepository.add(null, driver5);
 }
 
 testPrisma();

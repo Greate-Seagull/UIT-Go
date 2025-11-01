@@ -28,5 +28,23 @@ async function testRedis() {
     await composition_root_1.driverPositionRepository.save(driver4);
     await composition_root_1.driverPositionRepository.save(driver5);
 }
-testRedis();
+async function testPrisma() {
+    console.log(await composition_root_1.prisma.driver.findMany());
+    // let driver1 = Driver.create(11);
+    // driver1.state = DriverState.READY;
+    // let driver2 = Driver.create(12);
+    // driver2.state = DriverState.READY;
+    // let driver3 = Driver.create(13);
+    // driver3.state = DriverState.READY;
+    // let driver4 = Driver.create(14);
+    // driver4.state = DriverState.READY;
+    // let driver5 = Driver.create(15);
+    // driver5.state = DriverState.READY;
+    // await driverRepository.add(null, driver1);
+    // await driverRepository.add(null, driver2);
+    // await driverRepository.add(null, driver3);
+    // await driverRepository.add(null, driver4);
+    // await driverRepository.add(null, driver5);
+}
+testPrisma();
 //# sourceMappingURL=check-db.js.map

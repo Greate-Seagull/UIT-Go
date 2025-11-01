@@ -12,7 +12,7 @@ async function test() {
             "X-User-Id": "1",
         },
     });
-    console.log(result.status);
+    console.log(result.data);
 }
 test();
 //# sourceMappingURL=check-api.js.map

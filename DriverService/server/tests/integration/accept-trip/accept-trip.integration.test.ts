@@ -7,7 +7,7 @@ import { driver } from "./accept-trip.test-data";
 
 describe("Accept trip integration test", () => {
 	let path = "/api/drivers/me/accept";
-	let input = { driverId: driver.id, tripId: 1 };
+	let input = { driverId: driver.id, offerId: 1 };
 	let output: Request;
 
 	beforeAll(async () => {

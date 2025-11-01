@@ -5,7 +5,7 @@ import { TransactionManager } from "../infrastructure/repositories/transaction";
 
 export class AcceptTripUsecaseInput {
 	driverId!: number;
-	tripId!: number;
+	offerId!: number;
 }
 
 export class AcceptTripUsecaseOutput {
@@ -28,11 +28,11 @@ export class AcceptTripUsecase {
 			throw Error(`The driver is not in ready state: ${driver.state}`);
 
 		console.log(
-			`PUT /api/trips/${input.tripId}/assign | data: { driverId: ${input.driverId} }`
+			`POST /api/trips/${input.offerId}/assign | data: { driverId: ${input.driverId} }`
 		);
 		const tripResult = await this.tripApiClient.assignDriver(
 			input.driverId,
-			input.tripId
+			input.offerId
 		);
 		console.log(tripResult);
 

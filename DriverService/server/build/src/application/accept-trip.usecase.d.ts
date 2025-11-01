@@ -4,7 +4,7 @@ import { DriverRepository } from "../infrastructure/repositories/driver.reposito
 import { TransactionManager } from "../infrastructure/repositories/transaction";
 export declare class AcceptTripUsecaseInput {
     driverId: number;
-    tripId: number;
+    offerId: number;
 }
 export declare class AcceptTripUsecaseOutput {
     state: DriverState;

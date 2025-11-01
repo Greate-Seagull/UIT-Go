@@ -9,6 +9,7 @@ const composition_root_1 = require("../../composition-root");
 const trpc_1 = require("../../trpc");
 const zod_1 = require("zod");
 const search_driver_usecase_1 = require("../../application/search-driver.usecase");
+const accept_trip_usecase_1 = require("../../application/accept-trip.usecase");
 async function controlStartAccepting(req, res) {
     try {
         const result = await composition_root_1.startAcceptingUsecase.execute(req.body);
@@ -20,7 +21,10 @@ async function controlStartAccepting(req, res) {
 }
 async function controlAcceptTrip(req, res) {
     try {
-        const result = await composition_root_1.acceptTripUsecase.execute(req.body);
+        let input = new accept_trip_usecase_1.AcceptTripUsecaseInput();
+        input.driverId = Number(req.body.driverId);
+        input.offerId = Number(req.body.offerId);
+        const result = await composition_root_1.acceptTripUsecase.execute(input);
         res.json(result);
     }
     catch (e) {
