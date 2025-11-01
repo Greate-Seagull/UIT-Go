@@ -1,6 +1,7 @@
 import {
 	acceptTripUsecase,
 	completeTripUsecase,
+	searchDriverUsecase,
 	startAcceptingUsecase,
 	updatePositionUsecase,
 } from "../../composition-root";
@@ -34,6 +35,11 @@ export async function controlCompleteTrip(req: Request, res: Response) {
 	} catch (e: any) {
 		res.json({ message: e.message });
 	}
+}
+
+export async function controlSearchDriver(req: Request, res: Response) {
+	const result = await searchDriverUsecase.execute(req.body);
+	res.json(result);
 }
 
 export const updatePositionProcedure = trpc.procedure

@@ -1,10 +1,12 @@
 export class DriverPosition {
 	private _id: number;
+	private _lat!: number;
+	private _long!: number;
+
 	public get id(): number {
 		return this._id;
 	}
 
-	private _lat!: number;
 	public get lat(): number {
 		return this._lat;
 	}
@@ -12,7 +14,6 @@ export class DriverPosition {
 		this._lat = value;
 	}
 
-	private _long!: number;
 	public get long(): number {
 		return this._long;
 	}

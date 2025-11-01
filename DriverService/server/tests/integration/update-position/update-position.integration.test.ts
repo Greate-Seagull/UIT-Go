@@ -2,7 +2,7 @@ import { driverPositionInput } from "./update-position.test-data";
 import { updatePositionUsecase } from "../../../src/composition-root";
 
 describe("Update position integration test", () => {
-	let input;
+	let input: any;
 	let output: any;
 
 	describe("Normal case", () => {
@@ -11,12 +11,12 @@ describe("Update position integration test", () => {
 			output = await updatePositionUsecase.execute(input);
 		});
 
-		it("Should return correct lat", () => {
-			expect(output).toHaveProperty("lat", driverPositionInput.lat);
+		it("Should have lat", () => {
+			expect(output.lat).toBeCloseTo(input.lat);
 		});
 
-		it("Should return correct long", () => {
-			expect(output).toHaveProperty("long", driverPositionInput.long);
+		it("Should have long", () => {
+			expect(output.long).toBeCloseTo(input.long);
 		});
 	});
 });
