@@ -1,5 +1,4 @@
 
-version: "3.9"
 services:
   trip-postgres:
     image: postgres:16
@@ -11,7 +10,7 @@ services:
     volumes: [ "trippg:/var/lib/postgresql/data" ]
 
   trip-service:
-    build: ./trip-service
+    build: .
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://trip-postgres:5432/tripdb
       - SPRING_DATASOURCE_USERNAME=user
