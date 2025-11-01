@@ -9,6 +9,7 @@ import {
 import { Request, Response } from "express";
 import { trpc } from "../../trpc";
 import { z } from "zod";
+import { SearchDriverUsecaseInput } from "../../application/search-driver.usecase";
 
 export async function controlStartAccepting(req: Request, res: Response) {
 	try {
@@ -38,8 +39,18 @@ export async function controlCompleteTrip(req: Request, res: Response) {
 }
 
 export async function controlSearchDriver(req: Request, res: Response) {
-	const result = await searchDriverUsecase.execute(req.body);
-	res.json(result);
+	try {
+		let input = new SearchDriverUsecaseInput();
+		input.lat = Number(req.query.lat);
+		input.lng = Number(req.query.lng);
+		input.radiusMeters = Number(req.query.radiusMeters);
+		input.limit = Number(req.query.limit);
+
+		const result = await searchDriverUsecase.execute(input);
+		res.json(result);
+	} catch (e: any) {
+		res.json({ message: e.message });
+	}
 }
 
 export const updatePositionProcedure = trpc.procedure

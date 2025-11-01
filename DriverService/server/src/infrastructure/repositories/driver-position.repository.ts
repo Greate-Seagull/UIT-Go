@@ -4,12 +4,15 @@ import { DriverPositionMapper } from "../mappers/driver-position.mapper";
 import { en } from "zod/v4/locales";
 
 export class DriverPositionRepository {
-	private readonly GEO_KEY = "driver_positions";
+	public static readonly GEO_KEY = "driver_positions";
 
 	constructor(private readonly redis: Redis) {}
 
 	async getById(id: any) {
-		let persistences = await this.redis.geopos(this.GEO_KEY, id);
+		let persistences = await this.redis.geopos(
+			DriverPositionRepository.GEO_KEY,
+			id
+		);
 		let persistence = persistences[0];
 
 		if (!persistence) return persistence;
@@ -27,7 +30,7 @@ export class DriverPositionRepository {
 		const persistence = DriverPositionMapper.toPersistent(entity);
 
 		await this.redis.geoadd(
-			this.GEO_KEY,
+			DriverPositionRepository.GEO_KEY,
 			persistence.long,
 			persistence.lat,
 			persistence.id
@@ -44,17 +47,20 @@ export class DriverPositionRepository {
 	}
 
 	async find(lat: any, long: any, radiusMeters: any) {
-		const results = await this.redis.geosearch(
-			this.GEO_KEY,
-			"FROMLONLAT",
+		const results = await this.redis.georadius(
+			DriverPositionRepository.GEO_KEY,
 			long,
 			lat,
-			"BYRADIUS",
 			radiusMeters,
 			"m",
-			"WITHDIST"
+			"WITHCOORD"
 		);
 
-		return results.map((raw) => DriverPositionMapper.toDomain(raw));
+		const entities = results.map((result: any) => {
+			let raw = { id: result[0], long: result[1][0], lat: result[1][1] };
+			return DriverPositionMapper.toDomain(raw);
+		});
+
+		return entities;
 	}
 }
