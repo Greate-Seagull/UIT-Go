@@ -8,7 +8,11 @@ export class SearchDriverUsecaseInput {
 }
 
 export class SearchDriverUsecaseOutput {
-	constructor(public id: number, public lat: number, public long: number) {}
+	constructor(
+		public driverId: number,
+		public lat: number,
+		public long: number
+	) {}
 }
 
 export class SearchDriverUsecase {

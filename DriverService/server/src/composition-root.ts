@@ -26,7 +26,7 @@ export const axiosClient = axios.create({
 });
 
 const transaction = new TransactionManager(prisma);
-const driverRepository = new DriverRepository(prisma);
+export const driverRepository = new DriverRepository(prisma);
 export const driverPositionRepository = new DriverPositionRepository(redis);
 const tripApiClient = new TripApiClient(axiosClient);
 
@@ -44,6 +44,7 @@ export const updatePositionUsecase = new UpdatePositionUsecase(
 );
 export const completeTripUsecase = new CompleteTripUsecase(
 	driverRepository,
+	tripApiClient,
 	transaction
 );
 export const searchDriverUsecase = new SearchDriverUsecase(

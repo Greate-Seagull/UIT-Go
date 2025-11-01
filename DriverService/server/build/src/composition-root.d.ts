@@ -1,0 +1,17 @@
+import Redis from "ioredis";
+import { StartAcceptingUsecase } from "./application/start-accepting.usecase";
+import { AcceptTripUsecase } from "./application/accept-trip.usecase";
+import { UpdatePositionUsecase } from "./application/update-position.usecase";
+import { DriverPositionRepository } from "./infrastructure/repositories/driver-position.repository";
+import { CompleteTripUsecase } from "./application/complete-trip.usecase";
+import { SearchDriverUsecase } from "./application/search-driver.usecase";
+export declare const prisma: import("./generated/client/internal/class").PrismaClient<never, import("./generated/client/internal/prismaNamespace").GlobalOmitConfig | undefined, import("@prisma/client/runtime/library").DefaultArgs>;
+export declare const redis: Redis;
+export declare const axiosClient: import("axios").AxiosInstance;
+export declare const driverPositionRepository: DriverPositionRepository;
+export declare const startAcceptingUsecase: StartAcceptingUsecase;
+export declare const acceptTripUsecase: AcceptTripUsecase;
+export declare const updatePositionUsecase: UpdatePositionUsecase;
+export declare const completeTripUsecase: CompleteTripUsecase;
+export declare const searchDriverUsecase: SearchDriverUsecase;
+//# sourceMappingURL=composition-root.d.ts.map

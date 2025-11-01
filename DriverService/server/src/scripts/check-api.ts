@@ -15,7 +15,7 @@ async function test() {
 			},
 		}
 	);
-	console.log(result);
+	console.log(result.data);
 }
 
 test();

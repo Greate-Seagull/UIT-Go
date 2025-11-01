@@ -4,9 +4,20 @@ export class TripApiClient {
 	constructor(private readonly axios: AxiosInstance) {}
 
 	async assignDriver(driverId: number, tripId: number) {
-		console.log("enter tripApiClient");
 		return await this.axios.post(
 			`/trip/offers/${tripId}/accept`,
+			{},
+			{
+				headers: {
+					"X-Driver-Id": String(driverId),
+				},
+			}
+		);
+	}
+
+	async completeTrip(driverId: number, tripId: number) {
+		return await this.axios.post(
+			`/trips/${tripId}/complete`,
 			{},
 			{
 				headers: {

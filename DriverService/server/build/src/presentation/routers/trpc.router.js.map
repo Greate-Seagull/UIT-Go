@@ -1,0 +1,1 @@
+{"version":3,"file":"trpc.router.js","sourceRoot":"","sources":["../../../../src/presentation/routers/trpc.router.ts"],"names":[],"mappings":";;;AAAA,2DAAwE;AACxE,qCAAkC;AAClC,oEAA+D;AAE/D,MAAM,UAAU,GAAG,WAAI,CAAC,MAAM,CAAC;IAC9B,OAAO,EAAE,qCAAgB;CACzB,CAAC,CAAC;AAEU,QAAA,oBAAoB,GAAG,IAAA,iCAAuB,EAAC;IAC3D,MAAM,EAAE,UAAU;CAClB,CAAC,CAAC"}
