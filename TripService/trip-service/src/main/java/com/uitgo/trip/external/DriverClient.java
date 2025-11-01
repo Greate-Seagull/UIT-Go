@@ -20,7 +20,7 @@ public class DriverClient {
     @SuppressWarnings("unchecked")
     public List<Map<String,Object>> search(double lat, double lng, double radiusMeters, int limit){
         ResponseEntity<List> res = rest.get()
-                .uri(uri -> uri.path("/drivers/search")
+                .uri(uri -> uri.path("/api/drivers/search")
                         .queryParam("lat", lat)
                         .queryParam("lng", lng)
                         .queryParam("radiusMeters", radiusMeters)
