@@ -40,4 +40,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('CustomUser.urls')),
     path('api/v1/', include('AuthenticationJWT.urls')),
+    path('api/v1/', include('TripService.urls')),
 ]

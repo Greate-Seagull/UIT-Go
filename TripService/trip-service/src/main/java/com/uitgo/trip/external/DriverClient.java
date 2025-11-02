@@ -1,34 +1,25 @@
-
 package com.uitgo.trip.external;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+import com.uitgo.trip.dto.DriverNearby;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-@Component
-public class DriverClient {
-    private final RestClient rest;
+@FeignClient(name = "driver-service", url = "${external.driver-service.base-url}")
+public interface DriverClient {
 
-    public DriverClient(@Value("${external.driver-service.base-url:http://localhost:3000}") String baseUrl) {
-        this.rest = RestClient.builder().baseUrl(baseUrl).build();
-    }
+    @GetMapping("/api/drivers/search")
+    @CircuitBreaker(name = "driverSearch", fallbackMethod = "fallbackSearch")
+    List<DriverNearby> search(@RequestParam("lat") Double lat,
+                              @RequestParam("lng") Double lng,
+                              @RequestParam("radius") Integer radiusMeters,
+                              @RequestParam("limit") Integer limit);
 
-    @SuppressWarnings("unchecked")
-    public List<Map<String,Object>> search(double lat, double lng, double radiusMeters, int limit){
-        ResponseEntity<List> res = rest.get()
-                .uri(uri -> uri.path("/api/drivers/search")
-                        .queryParam("lat", lat)
-                        .queryParam("lng", lng)
-                        .queryParam("radiusMeters", radiusMeters)
-                        .queryParam("limit", limit)
-                        .build())
-                .retrieve()
-                .toEntity(List.class);
-        System.out.println(res);
-        return res.getBody();
+    default List<DriverNearby> fallbackSearch(Double lat, Double lng, Integer radiusMeters, Integer limit, Throwable t) {
+        return Collections.emptyList();
     }
 }
