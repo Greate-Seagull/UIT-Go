@@ -1,6 +1,7 @@
 import {
 	acceptTripUsecase,
 	completeTripUsecase,
+	rejectTripUsecase,
 	searchDriverUsecase,
 	startAcceptingUsecase,
 	updatePositionUsecase,
@@ -11,6 +12,7 @@ import { trpc } from "../../trpc";
 import { z } from "zod";
 import { SearchDriverUsecaseInput } from "../../application/search-driver.usecase";
 import { AcceptTripUsecaseInput } from "../../application/accept-trip.usecase";
+import { RejectTripUsecaseInput } from "../../application/reject-trip.usecase";
 
 export async function controlStartAccepting(req: Request, res: Response) {
 	try {
@@ -52,6 +54,19 @@ export async function controlSearchDriver(req: Request, res: Response) {
 		input.limit = Number(req.query.limit);
 
 		const result = await searchDriverUsecase.execute(input);
+		res.json(result);
+	} catch (e: any) {
+		res.json({ message: e.message });
+	}
+}
+
+export async function controlRejectTrip(req: Request, res: Response) {
+	try {
+		let input = new RejectTripUsecaseInput();
+		input.driverId = Number(req.body.driverId);
+		input.offerId = Number(req.body.offerId);
+
+		const result = await rejectTripUsecase.execute(input);
 		res.json(result);
 	} catch (e: any) {
 		res.json({ message: e.message });

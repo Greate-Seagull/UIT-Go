@@ -11,6 +11,7 @@ import { CompleteTripUsecase } from "./application/complete-trip.usecase";
 import axios from "axios";
 import { TripApiClient } from "./infrastructure/clients/trip.client";
 import { SearchDriverUsecase } from "./application/search-driver.usecase";
+import { RejectTripUsecase } from "./application/reject-trip.usecase";
 
 export const prisma = new PrismaClient();
 export const redis = new Redis(
@@ -49,4 +50,8 @@ export const completeTripUsecase = new CompleteTripUsecase(
 );
 export const searchDriverUsecase = new SearchDriverUsecase(
 	driverPositionRepository
+);
+export const rejectTripUsecase = new RejectTripUsecase(
+	driverRepository,
+	tripApiClient
 );
