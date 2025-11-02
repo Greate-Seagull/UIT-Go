@@ -18,9 +18,13 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    libmariadb-dev \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        pkg-config \
+        default-libmysqlclient-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-bes    t-practices/
 ARG UID=10001
@@ -37,6 +41,7 @@ RUN adduser \
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
+RUN python -m pip install --upgrade pip
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
