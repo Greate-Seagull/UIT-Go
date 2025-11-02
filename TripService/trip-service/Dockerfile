@@ -8,7 +8,7 @@ COPY gradle ./gradle
 COPY settings.gradle build.gradle ./
 
 # Cho phép thực thi wrapper
-RUN chmod +x gradlew
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
 # (tuỳ) Khởi tạo cache Gradle
 RUN ./gradlew --no-daemon --version

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'CustomUser',
     'drf_yasg',
     'corsheaders',
+    'TripService',
 ]
 
 MIDDLEWARE = [
