@@ -26,4 +26,4 @@ management:
 
 external:
   driver-service:
-    base-url: http://driver-service:8083
+    base-url: http://driver-service:3000

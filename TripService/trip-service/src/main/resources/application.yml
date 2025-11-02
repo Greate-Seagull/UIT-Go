@@ -15,7 +15,7 @@ spring:
 
 external:
   driver-service:
-    base-url: http://localhost:8083
+    base-url: ${EXTERNAL_DRIVER_SERVICE_BASE_URL}
 
 feign:
   client:
