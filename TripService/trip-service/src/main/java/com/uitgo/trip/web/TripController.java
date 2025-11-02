@@ -43,7 +43,7 @@ public class TripController {
         t.setEstimatedFare(28000L); // set tạm, FE gọi /pricing trước
         t.setCreatedAt(Instant.now()); t.setUpdatedAt(Instant.now());
         Trip saved = tripRepo.save(t);
-        matchingService.findAndOfferDriver(saved);
+        matchingService.triggerMatchingAsync(saved.getId());
         return saved;
     }
 

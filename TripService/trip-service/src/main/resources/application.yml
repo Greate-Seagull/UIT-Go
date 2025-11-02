@@ -1,30 +1,34 @@
-
 server:
-  port: 8082
+  error:
+    include-message: always
+    include-stacktrace: never
+
+logging:
+  level:
+    com.uitgo.trip: DEBUG
+    feign: INFO
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5434/tripdb
-    username: user
-    password: pass
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-
 external:
   driver-service:
     base-url: http://localhost:8083
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 2000
+        readTimeout: 2000
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      driverSearch:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
