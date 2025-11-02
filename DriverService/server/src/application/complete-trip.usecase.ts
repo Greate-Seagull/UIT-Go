@@ -1,4 +1,5 @@
 import { DriverState } from "../domain/driver.entity";
+import { TripApiClient } from "../infrastructure/clients/trip.client";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
 import { TransactionManager } from "../infrastructure/repositories/transaction";
 
@@ -15,6 +16,7 @@ export class CompleteTripUsecaseOutput {
 export class CompleteTripUsecase {
 	constructor(
 		private readonly driverRepository: DriverRepository,
+		private readonly tripApiClient: TripApiClient,
 		private readonly transactionManager: TransactionManager
 	) {}
 
@@ -27,9 +29,7 @@ export class CompleteTripUsecase {
 				`The driver is not in transporting state: ${driver.state}`
 			);
 
-		console.log(
-			`PUT /api/trips/${input.tripId}/complete | data: { driverId: ${input.driverId}, userId: ${input.userId} }`
-		);
+		await this.tripApiClient.completeTrip(input.driverId, input.tripId);
 
 		driver.state = DriverState.READY;
 

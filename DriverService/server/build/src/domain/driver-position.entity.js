@@ -3,17 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DriverPosition = void 0;
 class DriverPosition {
     _id;
+    _lat;
+    _long;
     get id() {
         return this._id;
     }
-    _lat;
     get lat() {
         return this._lat;
     }
     set lat(value) {
         this._lat = value;
     }
-    _long;
     get long() {
         return this._long;
     }

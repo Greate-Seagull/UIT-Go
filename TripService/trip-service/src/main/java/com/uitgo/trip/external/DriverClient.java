@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient(name = "driver-service", url = "${external.driver-service.base-url}")
 public interface DriverClient {
 
-    @GetMapping("/drivers/search")
+    @GetMapping("/api/drivers/search")
     @CircuitBreaker(name = "driverSearch", fallbackMethod = "fallbackSearch")
     List<DriverNearby> search(@RequestParam("lat") Double lat,
                               @RequestParam("lng") Double lng,

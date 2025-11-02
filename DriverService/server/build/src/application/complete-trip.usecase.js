@@ -17,9 +17,11 @@ class CompleteTripUsecaseOutput {
 exports.CompleteTripUsecaseOutput = CompleteTripUsecaseOutput;
 class CompleteTripUsecase {
     driverRepository;
+    tripApiClient;
     transactionManager;
-    constructor(driverRepository, transactionManager) {
+    constructor(driverRepository, tripApiClient, transactionManager) {
         this.driverRepository = driverRepository;
+        this.tripApiClient = tripApiClient;
         this.transactionManager = transactionManager;
     }
     async execute(input) {
@@ -28,7 +30,7 @@ class CompleteTripUsecase {
             throw Error(`Cannot find driver with id: ${input.driverId}`);
         if (driver.state != driver_entity_1.DriverState.TRANSPORTING)
             throw Error(`The driver is not in transporting state: ${driver.state}`);
-        console.log(`PUT /api/trips/${input.tripId}/complete | data: { driverId: ${input.driverId}, userId: ${input.userId} }`);
+        await this.tripApiClient.completeTrip(input.driverId, input.tripId);
         driver.state = driver_entity_1.DriverState.READY;
         const updatedDriver = await this.transactionManager.transaction(async (transaction) => {
             return await this.driverRepository.save(transaction, driver);

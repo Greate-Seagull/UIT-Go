@@ -61,10 +61,8 @@ public class MatchingService {
             log.warn("driverId missing in first driver result for trip {}", tripId);
             return;
         }
-
-        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING,
-                Instant.now().plusSeconds(15), Instant.now());
-
+        Long driverId = Long.valueOf(drivers.get(0).get("driverId").toString());
+        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING, Instant.now().plusSeconds(15 * 60), Instant.now());
         offerRepo.save(offer);
         trip.setStatus(TripStatus.OFFERING);
         trip.setUpdatedAt(Instant.now());

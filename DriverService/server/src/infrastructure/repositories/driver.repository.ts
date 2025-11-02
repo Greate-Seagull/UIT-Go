@@ -14,6 +14,19 @@ export class DriverRepository {
 		return DriverMapper.toDomain(row);
 	}
 
+	async add(tx: Transaction | null, entity: Driver) {
+		const repo = tx ? tx.driver : this.prisma.driver;
+
+		const row = await repo.create({
+			data: {
+				id: entity.id,
+				state: entity.state as any,
+			},
+		});
+
+		return DriverMapper.toDomain(row);
+	}
+
 	async save(tx: Transaction | null, entity: Driver) {
 		const repo = tx ? tx.driver : this.prisma.driver;
 

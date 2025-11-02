@@ -1,12 +1,23 @@
 import Redis from "ioredis";
 import { StartAcceptingUsecase } from "./application/start-accepting.usecase";
+import { DriverRepository } from "./infrastructure/repositories/driver.repository";
 import { AcceptTripUsecase } from "./application/accept-trip.usecase";
 import { UpdatePositionUsecase } from "./application/update-position.usecase";
+import { DriverPositionRepository } from "./infrastructure/repositories/driver-position.repository";
 import { CompleteTripUsecase } from "./application/complete-trip.usecase";
+import { SearchDriverUsecase } from "./application/search-driver.usecase";
+import { RejectTripUsecase } from "./application/reject-trip.usecase";
+import { GetPositionUsecase } from "./application/get-position.usecase";
 export declare const prisma: import("./generated/client/internal/class").PrismaClient<never, import("./generated/client/internal/prismaNamespace").GlobalOmitConfig | undefined, import("@prisma/client/runtime/library").DefaultArgs>;
 export declare const redis: Redis;
+export declare const axiosClient: import("axios").AxiosInstance;
+export declare const driverRepository: DriverRepository;
+export declare const driverPositionRepository: DriverPositionRepository;
 export declare const startAcceptingUsecase: StartAcceptingUsecase;
 export declare const acceptTripUsecase: AcceptTripUsecase;
 export declare const updatePositionUsecase: UpdatePositionUsecase;
 export declare const completeTripUsecase: CompleteTripUsecase;
+export declare const searchDriverUsecase: SearchDriverUsecase;
+export declare const rejectTripUsecase: RejectTripUsecase;
+export declare const getPositionUsecase: GetPositionUsecase;
 //# sourceMappingURL=composition-root.d.ts.map

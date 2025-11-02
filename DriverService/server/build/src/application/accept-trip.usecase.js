@@ -4,7 +4,7 @@ exports.AcceptTripUsecase = exports.AcceptTripUsecaseOutput = exports.AcceptTrip
 const driver_entity_1 = require("../domain/driver.entity");
 class AcceptTripUsecaseInput {
     driverId;
-    tripId;
+    offerId;
 }
 exports.AcceptTripUsecaseInput = AcceptTripUsecaseInput;
 class AcceptTripUsecaseOutput {
@@ -16,9 +16,11 @@ class AcceptTripUsecaseOutput {
 exports.AcceptTripUsecaseOutput = AcceptTripUsecaseOutput;
 class AcceptTripUsecase {
     driverRepository;
+    tripApiClient;
     transactionManager;
-    constructor(driverRepository, transactionManager) {
+    constructor(driverRepository, tripApiClient, transactionManager) {
         this.driverRepository = driverRepository;
+        this.tripApiClient = tripApiClient;
         this.transactionManager = transactionManager;
     }
     async execute(input) {
@@ -27,7 +29,7 @@ class AcceptTripUsecase {
             throw Error(`Cannot find driver with id: ${input.driverId}`);
         if (driver.state != driver_entity_1.DriverState.READY)
             throw Error(`The driver is not in ready state: ${driver.state}`);
-        console.log(`PUT /api/trips/${input.tripId}/assign | data: { driverId: ${input.driverId} }`);
+        const tripResult = await this.tripApiClient.assignDriver(input.driverId, input.offerId);
         driver.state = driver_entity_1.DriverState.TRANSPORTING;
         const updatedDriver = await this.transactionManager.transaction(async (transaction) => {
             return await this.driverRepository.save(transaction, driver);

@@ -159,3 +159,5 @@ dist
 
 /src/generated
 # /src/generated/prisma
+
+./build

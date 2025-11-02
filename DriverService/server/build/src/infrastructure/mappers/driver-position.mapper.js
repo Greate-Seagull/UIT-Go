@@ -13,6 +13,7 @@ class DriverPositionMapper {
     }
     static toPersistent(entity) {
         return {
+            id: entity.id,
             lat: entity.lat,
             long: entity.long,
         };
