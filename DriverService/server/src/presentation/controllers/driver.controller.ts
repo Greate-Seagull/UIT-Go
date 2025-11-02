@@ -96,7 +96,7 @@ export async function controlRejectTrip(req: Request, res: Response) {
 		const result = await rejectTripUsecase.execute(input);
 		res.json(result);
 
-		console.log("Call API PUT /api/drivers/me/reject");
+		console.log("Complete API PUT /api/drivers/me/reject");
 	} catch (e: any) {
 		res.json({ message: e.message });
 	}
@@ -105,7 +105,7 @@ export async function controlRejectTrip(req: Request, res: Response) {
 export async function controlGetPosition(req: Request, res: Response) {
 	try {
 		console.log(
-			`Call API PUT /api/drivers/${req.params.driverId}/position`
+			`Call API GET /api/drivers/${req.params.driverId}/position`
 		);
 
 		let input = new GetPositionUsecaseInput();
@@ -115,7 +115,7 @@ export async function controlGetPosition(req: Request, res: Response) {
 		res.json(result);
 
 		console.log(
-			`Complete API PUT /api/drivers/${req.params.driverId}/position`
+			`Complete API GET /api/drivers/${req.params.driverId}/position`
 		);
 	} catch (e: any) {
 		res.json({ message: e.message });

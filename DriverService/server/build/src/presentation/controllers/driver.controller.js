@@ -77,7 +77,7 @@ async function controlRejectTrip(req, res) {
         input.offerId = Number(req.body.offerId);
         const result = await composition_root_1.rejectTripUsecase.execute(input);
         res.json(result);
-        console.log("Call API PUT /api/drivers/me/reject");
+        console.log("Complete API PUT /api/drivers/me/reject");
     }
     catch (e) {
         res.json({ message: e.message });
@@ -85,12 +85,12 @@ async function controlRejectTrip(req, res) {
 }
 async function controlGetPosition(req, res) {
     try {
-        console.log(`Call API PUT /api/drivers/${req.params.driverId}/position`);
+        console.log(`Call API GET /api/drivers/${req.params.driverId}/position`);
         let input = new get_position_usecase_1.GetPositionUsecaseInput();
         input.driverId = Number(req.params.driverId);
         const result = await composition_root_1.getPositionUsecase.execute(input);
         res.json(result);
-        console.log(`Complete API PUT /api/drivers/${req.params.driverId}/position`);
+        console.log(`Complete API GET /api/drivers/${req.params.driverId}/position`);
     }
     catch (e) {
         res.json({ message: e.message });

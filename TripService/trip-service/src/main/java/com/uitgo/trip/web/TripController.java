@@ -35,6 +35,8 @@ public class TripController {
 
     @PostMapping
     public Trip create(@Valid @RequestBody CreateTripReq req, @RequestHeader("X-User-Id") Long passengerId){
+        System.out.println(String.format("Call API POST /trips/"));
+
         Trip t = new Trip();
         t.setPassengerId(passengerId);
         t.setStatus(TripStatus.FINDING_DRIVER);
@@ -44,6 +46,8 @@ public class TripController {
         t.setCreatedAt(Instant.now()); t.setUpdatedAt(Instant.now());
         Trip saved = tripRepo.save(t);
         matchingService.findAndOfferDriver(saved);
+
+        System.out.println(String.format("Complete API POST /trips/"));
         return saved;
     }
 
@@ -54,6 +58,8 @@ public class TripController {
 
     @PostMapping("/{id}/cancel")
     public Trip cancel(@PathVariable Long id, @RequestHeader("X-User-Id") Long passengerId, @RequestBody(required = false) CancelReq req){
+        System.out.println(String.format("Call API POST /trips/%s/cancel", id));
+
         Trip t = tripRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (!passengerId.equals(t.getPassengerId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not owner");
@@ -61,15 +67,21 @@ public class TripController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancel");
         t.setStatus(TripStatus.CANCELED); t.setUpdatedAt(Instant.now());
         offerRepo.expireAllPendingsOfTrip(t.getId());
+
+        System.out.println(String.format("Complete API POST /trips/%s/cancel", id));
         return tripRepo.save(t);
     }
 
     @PostMapping("/{id}/rating")
     public ResponseEntity<?> rate(@PathVariable Long id, @Valid @RequestBody RateReq req, @RequestHeader("X-User-Id") Long passengerId){
+        System.out.println(String.format("Call API POST /trips/%s/rating", id));
+
         Trip t = tripRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (!passengerId.equals(t.getPassengerId()) || t.getStatus()!=TripStatus.COMPLETED)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed");
         ratingRepo.save(new com.uitgo.trip.domain.TripRating(id, req.rating(), req.comment(), Instant.now()));
+
+        System.out.println(String.format("Complete API POST /trips/%s/rating", id));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

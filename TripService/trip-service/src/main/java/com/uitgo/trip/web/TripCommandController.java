@@ -18,21 +18,29 @@ public class TripCommandController {
 
     @PostMapping("/{id}/start")
     public Trip start(@PathVariable Long id, @RequestHeader("X-Driver-Id") Long driverId){
+        System.out.println(String.format("Call API POST /trips/%s/start", id));
+
         Trip t = tripRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (!driverId.equals(t.getDriverId()) || t.getStatus()!= TripStatus.ACCEPTED)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         t.setStatus(TripStatus.IN_PROGRESS); t.setUpdatedAt(Instant.now());
+
+        System.out.println(String.format("Complete API POST /trips/%s/start", id));
         return tripRepo.save(t);
     }
 
     @PostMapping("/{id}/complete")
     public Trip complete(@PathVariable Long id, @RequestHeader("X-Driver-Id") Long driverId){
+        System.out.println(String.format("Call API POST /trips/%s/complete", id));
+
         Trip t = tripRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (!driverId.equals(t.getDriverId()) || t.getStatus()!= TripStatus.IN_PROGRESS)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         t.setStatus(TripStatus.COMPLETED);
         t.setFinalFare(t.getEstimatedFare());
         t.setUpdatedAt(Instant.now());
+
+        System.out.println(String.format("Complete API POST /trips/%s/complete", id));
         return tripRepo.save(t);
     }
 }
