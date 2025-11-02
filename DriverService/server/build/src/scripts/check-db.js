@@ -41,7 +41,7 @@ async function testPrisma() {
     // let driver5 = Driver.create(15);
     // driver5.state = DriverState.READY;
     // await driverRepository.add(null, driver1);
-    // await driverRepository.add(null, driver2);
+    // await driverRepository.save(null, driver2);
     // await driverRepository.add(null, driver3);
     // await driverRepository.add(null, driver4);
     // await driverRepository.add(null, driver5);

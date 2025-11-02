@@ -4,5 +4,6 @@ export declare class TripApiClient {
     constructor(axios: AxiosInstance);
     assignDriver(driverId: number, offerId: number): Promise<import("axios").AxiosResponse<any, any, {}>>;
     completeTrip(driverId: number, tripId: number): Promise<import("axios").AxiosResponse<any, any, {}>>;
+    reject(driverId: number, offerId: number): Promise<import("axios").AxiosResponse<any, any, {}>>;
 }
 //# sourceMappingURL=trip.client.d.ts.map

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchDriverUsecase = exports.completeTripUsecase = exports.updatePositionUsecase = exports.acceptTripUsecase = exports.startAcceptingUsecase = exports.driverPositionRepository = exports.driverRepository = exports.axiosClient = exports.redis = exports.prisma = void 0;
+exports.getPositionUsecase = exports.rejectTripUsecase = exports.searchDriverUsecase = exports.completeTripUsecase = exports.updatePositionUsecase = exports.acceptTripUsecase = exports.startAcceptingUsecase = exports.driverPositionRepository = exports.driverRepository = exports.axiosClient = exports.redis = exports.prisma = void 0;
 const config_1 = require("./config/config");
 const ioredis_1 = __importDefault(require("ioredis"));
 const client_1 = require("./generated/client/client");
@@ -17,6 +17,8 @@ const complete_trip_usecase_1 = require("./application/complete-trip.usecase");
 const axios_1 = __importDefault(require("axios"));
 const trip_client_1 = require("./infrastructure/clients/trip.client");
 const search_driver_usecase_1 = require("./application/search-driver.usecase");
+const reject_trip_usecase_1 = require("./application/reject-trip.usecase");
+const get_position_usecase_1 = require("./application/get-position.usecase");
 exports.prisma = new client_1.PrismaClient();
 exports.redis = new ioredis_1.default(config_1.config.redis.REDIS_PORT, config_1.config.redis.REDIS_HOST);
 exports.axiosClient = axios_1.default.create({
@@ -35,4 +37,6 @@ exports.acceptTripUsecase = new accept_trip_usecase_1.AcceptTripUsecase(exports.
 exports.updatePositionUsecase = new update_position_usecase_1.UpdatePositionUsecase(exports.driverPositionRepository);
 exports.completeTripUsecase = new complete_trip_usecase_1.CompleteTripUsecase(exports.driverRepository, tripApiClient, transaction);
 exports.searchDriverUsecase = new search_driver_usecase_1.SearchDriverUsecase(exports.driverPositionRepository);
+exports.rejectTripUsecase = new reject_trip_usecase_1.RejectTripUsecase(exports.driverRepository, tripApiClient);
+exports.getPositionUsecase = new get_position_usecase_1.GetPositionUsecase(exports.driverPositionRepository);
 //# sourceMappingURL=composition-root.js.map

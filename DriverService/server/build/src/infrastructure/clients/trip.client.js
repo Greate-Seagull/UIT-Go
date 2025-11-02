@@ -20,6 +20,13 @@ class TripApiClient {
             },
         });
     }
+    async reject(driverId, offerId) {
+        return await this.axios.post(`/trip/offers/${offerId}/reject`, {}, {
+            headers: {
+                "X-Driver-Id": String(driverId),
+            },
+        });
+    }
 }
 exports.TripApiClient = TripApiClient;
 //# sourceMappingURL=trip.client.js.map

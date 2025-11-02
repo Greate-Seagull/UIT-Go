@@ -19,14 +19,10 @@ export class RejectTripUsecase {
 		if (!driver)
 			throw Error(`Cannot find driver with id: ${input.driverId}`);
 
-		console.log(
-			`POST trip/offers/${input.offerId}/reject | data: { driverId: ${input.driverId} }`
-		);
 		const tripResult = await this.tripApiClient.reject(
 			input.driverId,
 			input.offerId
 		);
-		console.log(tripResult);
 
 		let output = new RejectTripUsecaseOutput();
 

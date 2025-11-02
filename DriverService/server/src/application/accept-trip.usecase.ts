@@ -27,14 +27,10 @@ export class AcceptTripUsecase {
 		if (driver.state != DriverState.READY)
 			throw Error(`The driver is not in ready state: ${driver.state}`);
 
-		console.log(
-			`POST /api/trips/${input.offerId}/assign | data: { driverId: ${input.driverId} }`
-		);
 		const tripResult = await this.tripApiClient.assignDriver(
 			input.driverId,
 			input.offerId
 		);
-		console.log(tripResult);
 
 		driver.state = DriverState.TRANSPORTING;
 
