@@ -10,9 +10,12 @@ import com.uitgo.trip.repo.OfferRepository;
 import com.uitgo.trip.repo.TripRatingRepository;
 import com.uitgo.trip.repo.TripRepository;
 import com.uitgo.trip.service.MatchingService;
+import com.uitgo.trip.service.TripService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,17 +29,19 @@ public class TripController {
     private final TripRatingRepository ratingRepo;
     private final MatchingService matchingService;
 
-    public TripController(TripRepository tripRepo, OfferRepository offerRepo, TripRatingRepository ratingRepo, MatchingService matchingService) {
+    private final TripService tripService;
+
+    public TripController(TripRepository tripRepo, OfferRepository offerRepo, TripRatingRepository ratingRepo, MatchingService matchingService, TripService tripService) {
         this.tripRepo = tripRepo;
         this.offerRepo = offerRepo;
         this.ratingRepo = ratingRepo;
         this.matchingService = matchingService;
+        this.tripService = tripService;
     }
 
     @PostMapping
     public Trip create(@Valid @RequestBody CreateTripReq req, @RequestHeader("X-User-Id") Long passengerId){
         System.out.println(String.format("Call API POST /trips/"));
-
         Trip t = new Trip();
         t.setPassengerId(passengerId);
         t.setStatus(TripStatus.FINDING_DRIVER);
@@ -45,7 +50,7 @@ public class TripController {
         t.setEstimatedFare(28000L); // set tạm, FE gọi /pricing trước
         t.setCreatedAt(Instant.now()); t.setUpdatedAt(Instant.now());
         Trip saved = tripRepo.save(t);
-        matchingService.findAndOfferDriver(saved);
+        matchingService.findAndOfferDriver(saved.getId());
 
         System.out.println(String.format("Complete API POST /trips/"));
         return saved;
@@ -57,19 +62,13 @@ public class TripController {
     }
 
     @PostMapping("/{id}/cancel")
-    public Trip cancel(@PathVariable Long id, @RequestHeader("X-User-Id") Long passengerId, @RequestBody(required = false) CancelReq req){
-        System.out.println(String.format("Call API POST /trips/%s/cancel", id));
-
-        Trip t = tripRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!passengerId.equals(t.getPassengerId()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not owner");
-        if (t.getStatus()==TripStatus.COMPLETED || t.getStatus()==TripStatus.CANCELED)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancel");
-        t.setStatus(TripStatus.CANCELED); t.setUpdatedAt(Instant.now());
-        offerRepo.expireAllPendingsOfTrip(t.getId());
-
-        System.out.println(String.format("Complete API POST /trips/%s/cancel", id));
-        return tripRepo.save(t);
+    public Trip cancel(@PathVariable Long id,
+                       @RequestHeader("X-User-Id") Long passengerId,
+                       @RequestBody(required = false) CancelReq req) {
+        System.out.printf("Calla API POST /trips/%s/cancel%n", id);
+        Trip r = tripService.cancelTrip(id, passengerId);
+        System.out.printf("Done API POST /trips/%s/cancel%n", id);
+        return r;
     }
 
     @PostMapping("/{id}/rating")
