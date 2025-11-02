@@ -16,7 +16,7 @@ public interface DriverClient {
     @CircuitBreaker(name = "driverSearch", fallbackMethod = "fallbackSearch")
     List<DriverNearby> search(@RequestParam("lat") Double lat,
                               @RequestParam("lng") Double lng,
-                              @RequestParam("radius") Integer radiusMeters,
+                              @RequestParam("radiusMeters") Integer radiusMeters,
                               @RequestParam("limit") Integer limit);
 
     default List<DriverNearby> fallbackSearch(Double lat, Double lng, Integer radiusMeters, Integer limit, Throwable t) {
