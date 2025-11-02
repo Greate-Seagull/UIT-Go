@@ -12,6 +12,7 @@ import axios from "axios";
 import { TripApiClient } from "./infrastructure/clients/trip.client";
 import { SearchDriverUsecase } from "./application/search-driver.usecase";
 import { RejectTripUsecase } from "./application/reject-trip.usecase";
+import { GetPositionUsecase } from "./application/get-position.usecase";
 
 export const prisma = new PrismaClient();
 export const redis = new Redis(
@@ -54,4 +55,7 @@ export const searchDriverUsecase = new SearchDriverUsecase(
 export const rejectTripUsecase = new RejectTripUsecase(
 	driverRepository,
 	tripApiClient
+);
+export const getPositionUsecase = new GetPositionUsecase(
+	driverPositionRepository
 );
