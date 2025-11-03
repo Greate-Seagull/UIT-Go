@@ -1,4 +1,4 @@
-package com.uitgo.trip.web;
+package com.uitgo.trip.controller;
 
 import com.uitgo.trip.domain.Trip;
 import com.uitgo.trip.enums.TripStatus;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
