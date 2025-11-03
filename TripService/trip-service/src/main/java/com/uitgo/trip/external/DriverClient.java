@@ -1,15 +1,17 @@
 package com.uitgo.trip.external;
 
+import com.uitgo.trip.dto.DriverLocation;
 import com.uitgo.trip.dto.DriverNearby;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Collections;
 import java.util.List;
 
-@FeignClient(name = "driver-service", url = "${external.driver-service.base-url}")
+@FeignClient(name = "driver-service",
+        url = "${external.driver-service.base-url}")
 public interface DriverClient {
 
     @GetMapping("/api/drivers/search")
@@ -21,5 +23,13 @@ public interface DriverClient {
 
     default List<DriverNearby> fallbackSearch(Double lat, Double lng, Integer radiusMeters, Integer limit, Throwable t) {
         return Collections.emptyList();
+    }
+
+    @GetMapping("/api/drivers/{driverId}/position")
+    @CircuitBreaker(name = "driverGetLocation", fallbackMethod = "fallbackGetLocation")
+    DriverLocation getCurrentLocation(@PathVariable("driverId") Long driverId);
+
+    default DriverLocation fallbackGetLocation(Long driverId, Throwable t) {
+        return null;
     }
 }

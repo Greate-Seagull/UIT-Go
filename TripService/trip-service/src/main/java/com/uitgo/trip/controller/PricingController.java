@@ -1,5 +1,5 @@
 
-package com.uitgo.trip.web;
+package com.uitgo.trip.controller;
 
 import com.uitgo.trip.dto.EstimateReq;
 import com.uitgo.trip.dto.EstimateRes;
