@@ -34,6 +34,7 @@ class Me(APIView):
             'data': data
         })
     
+    
 
     def put(self, request):
         user = self.request.user

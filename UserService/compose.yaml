@@ -19,8 +19,20 @@ services:
     volumes:
       - .:/app 
     
-    # 2. Ghi đè CMD của Dockerfile để dùng dev server (tự reload)
-    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      GUNICORN_WORKERS: 9            # ≈ 2 * CPU + 1 (ví dụ máy 4 vCPU)
+      GUNICORN_WORKER_CONNECTIONS: 2000
+      GUNICORN_TIMEOUT: 30
+      GUNICORN_LOG_LEVEL: warning
+    
+    # BỎ dòng "command: ..." để nó dùng CMD tối ưu trong Dockerfile
+    # command: python manage.py runserver...  <-- KHÔNG DÙNG CÁI NÀY Ở PROD
+    
+    # Tăng giới hạn hệ điều hành để chịu tải 1k connection
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
