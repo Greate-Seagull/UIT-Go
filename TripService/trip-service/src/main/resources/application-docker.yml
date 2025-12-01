@@ -25,5 +25,5 @@ management:
 
 external:
     driver-service:
-        base-url: ${EXTERNAL_DRIVER_SERVICE_BASE_URL:host.docker.internal:8081}
-        enabled: ${EXTERNAL_DRIVER_SERVICE_ENABLED:true}
+        base-url: ${EXTERNAL_DRIVER_SERVICE_BASE_URL}
+        enabled: ${EXTERNAL_DRIVER_SERVICE_ENABLED}

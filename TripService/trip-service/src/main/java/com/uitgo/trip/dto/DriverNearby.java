@@ -1,3 +1,9 @@
 package com.uitgo.trip.dto;
 
-public record DriverNearby(Long driverId, Double lat, Double lng, Double distanceMeters) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record DriverNearby(
+        @JsonProperty("driverId") Long driverId,
+        @JsonProperty("lat") Double lat,
+        @JsonProperty("long") Double lng
+) {}
