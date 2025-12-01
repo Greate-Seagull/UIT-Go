@@ -30,7 +30,9 @@ SECRET_KEY = 'django-insecure-g(7ho#l^y%*li@mox#vl2$r66p52(34xz_ysr0_$p@#&s)6x@0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'ec2-18-138-243-172.ap-southeast-1.compute.amazonaws.com',
+]
 
 
 # Application definition
@@ -188,7 +190,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
-    'http://127.0.0.1:8000'
+    'http://127.0.0.1:8000',
+    'http://ec2-18-138-243-172.ap-southeast-1.compute.amazonaws.com:8000',
 ]
 
 
