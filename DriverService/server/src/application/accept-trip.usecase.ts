@@ -1,10 +1,11 @@
 import { DriverState } from "../domain/driver.entity";
+import { TripApiClient } from "../infrastructure/clients/trip.client";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
 import { TransactionManager } from "../infrastructure/repositories/transaction";
 
 export class AcceptTripUsecaseInput {
 	driverId!: number;
-	tripId!: number;
+	offerId!: number;
 }
 
 export class AcceptTripUsecaseOutput {
@@ -14,6 +15,7 @@ export class AcceptTripUsecaseOutput {
 export class AcceptTripUsecase {
 	constructor(
 		private readonly driverRepository: DriverRepository,
+		private readonly tripApiClient: TripApiClient,
 		private readonly transactionManager: TransactionManager
 	) {}
 
@@ -25,8 +27,9 @@ export class AcceptTripUsecase {
 		if (driver.state != DriverState.READY)
 			throw Error(`The driver is not in ready state: ${driver.state}`);
 
-		console.log(
-			`PUT /api/trips/${input.tripId}/assign | data: { driverId: ${input.driverId} }`
+		const tripResult = await this.tripApiClient.assignDriver(
+			input.driverId,
+			input.offerId
 		);
 
 		driver.state = DriverState.TRANSPORTING;

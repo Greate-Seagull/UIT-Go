@@ -10,11 +10,11 @@ describe("Update position integration test", () => {
             input = update_position_test_data_1.driverPositionInput;
             output = await composition_root_1.updatePositionUsecase.execute(input);
         });
-        it("Should return correct lat", () => {
-            expect(output).toHaveProperty("lat", update_position_test_data_1.driverPositionInput.lat);
+        it("Should have lat", () => {
+            expect(output.lat).toBeCloseTo(input.lat);
         });
-        it("Should return correct long", () => {
-            expect(output).toHaveProperty("long", update_position_test_data_1.driverPositionInput.long);
+        it("Should have long", () => {
+            expect(output.long).toBeCloseTo(input.long);
         });
     });
 });

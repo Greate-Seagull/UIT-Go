@@ -45,7 +45,7 @@ public class MatchingService {
 
         List<DriverNearby> drivers;
         try {
-            drivers = driverClient.search(trip.getPickupLat(), trip.getPickupLng(), 3000, 10);
+            drivers = driverClient.search(trip.getPickupLat(), trip.getPickupLng(), 5000, 10);
         } catch (Exception ex) {
             log.warn("Driver service call failed for trip {}: {}", tripId, ex.toString());
             return; // giữ FINDING_DRIVER
@@ -62,9 +62,7 @@ public class MatchingService {
             return;
         }
 
-        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING,
-                Instant.now().plusSeconds(15), Instant.now());
-
+        Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING, Instant.now().plusSeconds(15 * 60), Instant.now());
         offerRepo.save(offer);
         trip.setStatus(TripStatus.OFFERING);
         trip.setUpdatedAt(Instant.now());

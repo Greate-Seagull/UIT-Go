@@ -13,6 +13,16 @@ class DriverRepository {
         });
         return driver_mapper_1.DriverMapper.toDomain(row);
     }
+    async add(tx, entity) {
+        const repo = tx ? tx.driver : this.prisma.driver;
+        const row = await repo.create({
+            data: {
+                id: entity.id,
+                state: entity.state,
+            },
+        });
+        return driver_mapper_1.DriverMapper.toDomain(row);
+    }
     async save(tx, entity) {
         const repo = tx ? tx.driver : this.prisma.driver;
         const row = await repo.update({

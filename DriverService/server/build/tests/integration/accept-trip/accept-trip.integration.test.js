@@ -10,7 +10,7 @@ const composition_root_1 = require("../../../src/composition-root");
 const accept_trip_test_data_1 = require("./accept-trip.test-data");
 describe("Accept trip integration test", () => {
     let path = "/api/drivers/me/accept";
-    let input = { driverId: accept_trip_test_data_1.driver.id, tripId: 1 };
+    let input = { driverId: accept_trip_test_data_1.driver.id, offerId: 1 };
     let output;
     beforeAll(async () => {
         await composition_root_1.prisma.driver.create({ data: accept_trip_test_data_1.driver });

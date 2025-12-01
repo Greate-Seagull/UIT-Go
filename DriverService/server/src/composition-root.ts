@@ -8,16 +8,29 @@ import { AcceptTripUsecase } from "./application/accept-trip.usecase";
 import { UpdatePositionUsecase } from "./application/update-position.usecase";
 import { DriverPositionRepository } from "./infrastructure/repositories/driver-position.repository";
 import { CompleteTripUsecase } from "./application/complete-trip.usecase";
+import axios from "axios";
+import { TripApiClient } from "./infrastructure/clients/trip.client";
+import { SearchDriverUsecase } from "./application/search-driver.usecase";
+import { RejectTripUsecase } from "./application/reject-trip.usecase";
+import { GetPositionUsecase } from "./application/get-position.usecase";
 
 export const prisma = new PrismaClient();
 export const redis = new Redis(
 	config.redis.REDIS_PORT,
 	config.redis.REDIS_HOST
 );
+export const axiosClient = axios.create({
+	baseURL: config.tripApi.TRIP_SERVICE_URL,
+	timeout: 5000,
+	headers: {
+		"Content-Type": "application/json",
+	},
+});
 
 const transaction = new TransactionManager(prisma);
-const driverRepository = new DriverRepository(prisma);
-const driverPositionRepository = new DriverPositionRepository(redis);
+export const driverRepository = new DriverRepository(prisma);
+export const driverPositionRepository = new DriverPositionRepository(redis);
+const tripApiClient = new TripApiClient(axiosClient);
 
 export const startAcceptingUsecase = new StartAcceptingUsecase(
 	driverRepository,
@@ -25,6 +38,7 @@ export const startAcceptingUsecase = new StartAcceptingUsecase(
 );
 export const acceptTripUsecase = new AcceptTripUsecase(
 	driverRepository,
+	tripApiClient,
 	transaction
 );
 export const updatePositionUsecase = new UpdatePositionUsecase(
@@ -32,5 +46,16 @@ export const updatePositionUsecase = new UpdatePositionUsecase(
 );
 export const completeTripUsecase = new CompleteTripUsecase(
 	driverRepository,
+	tripApiClient,
 	transaction
+);
+export const searchDriverUsecase = new SearchDriverUsecase(
+	driverPositionRepository
+);
+export const rejectTripUsecase = new RejectTripUsecase(
+	driverRepository,
+	tripApiClient
+);
+export const getPositionUsecase = new GetPositionUsecase(
+	driverPositionRepository
 );

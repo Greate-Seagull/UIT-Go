@@ -1,10 +1,10 @@
 export declare class DriverPosition {
     private _id;
-    get id(): number;
     private _lat;
+    private _long;
+    get id(): number;
     get lat(): number;
     set lat(value: number);
-    private _long;
     get long(): number;
     set long(value: number);
     constructor(id: number);

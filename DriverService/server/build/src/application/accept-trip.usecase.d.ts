@@ -1,9 +1,10 @@
 import { DriverState } from "../domain/driver.entity";
+import { TripApiClient } from "../infrastructure/clients/trip.client";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
 import { TransactionManager } from "../infrastructure/repositories/transaction";
 export declare class AcceptTripUsecaseInput {
     driverId: number;
-    tripId: number;
+    offerId: number;
 }
 export declare class AcceptTripUsecaseOutput {
     state: DriverState;
@@ -11,8 +12,9 @@ export declare class AcceptTripUsecaseOutput {
 }
 export declare class AcceptTripUsecase {
     private readonly driverRepository;
+    private readonly tripApiClient;
     private readonly transactionManager;
-    constructor(driverRepository: DriverRepository, transactionManager: TransactionManager);
+    constructor(driverRepository: DriverRepository, tripApiClient: TripApiClient, transactionManager: TransactionManager);
     execute(input: AcceptTripUsecaseInput): Promise<AcceptTripUsecaseOutput>;
 }
 //# sourceMappingURL=accept-trip.usecase.d.ts.map

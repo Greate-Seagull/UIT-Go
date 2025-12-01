@@ -1,5 +1,5 @@
 services:
-    app:
+    trip-service:
         build: .
         depends_on:
             - redis
@@ -7,6 +7,7 @@ services:
             DATABASE_URL: "${DATABASE_URL}"
             REDIS_HOST: redis
             REDIS_PORT: 6379
+            TRIP_SERVICE_URL: http://host.docker.internal:8082
         ports:
             - "3000:3000"
 

@@ -1,0 +1,169 @@
+{
+	"info": {
+		"_postman_id": "978b171f-4a6f-4c30-a590-38b1e5ffaa45",
+		"name": "UIT-Go TripService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "42381137"
+	},
+	"item": [
+		{
+			"name": "Estimate Fare",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"pickupLat\": 16.06, \"pickupLng\": 108.21, \"dropoffLat\": 16.05, \"dropoffLng\": 108.23, \"timeOfDay\": \"PEAK\"}"
+				},
+				"url": "http://localhost:8082/pricing/estimate"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Trip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "101"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"pickupLat\": 16.06, \"pickupLng\": 108.21, \"dropoffLat\": 16.05, \"dropoffLng\": 108.23}"
+				},
+				"url": "http://localhost:8082/trips"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Trip",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8082/trips/{{tripId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Trip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "101"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"reason\": \"CHANGE_OF_PLAN\"}"
+				},
+				"url": "http://localhost:8082/trips/{{tripId}}/cancel"
+			},
+			"response": []
+		},
+		{
+			"name": "Driver Offers - List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Driver-Id",
+						"value": "201"
+					}
+				],
+				"url": "http://localhost:8082/driver/offers"
+			},
+			"response": []
+		},
+		{
+			"name": "Driver Offer Accept",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Driver-Id",
+						"value": "201"
+					}
+				],
+				"url": "http://localhost:8082/driver/offers/{{offerId}}/accept"
+			},
+			"response": []
+		},
+		{
+			"name": "Start Trip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Driver-Id",
+						"value": "201"
+					}
+				],
+				"url": "http://localhost:8082/trips/{{tripId}}/start"
+			},
+			"response": []
+		},
+		{
+			"name": "Complete Trip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Driver-Id",
+						"value": "201"
+					}
+				],
+				"url": "http://localhost:8082/trips/{{tripId}}/complete"
+			},
+			"response": []
+		},
+		{
+			"name": "Rate Trip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "101"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"rating\": 5, \"comment\": \"Great ride!\"}"
+				},
+				"url": "http://localhost:8082/trips/{{tripId}}/rating"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "tripId",
+			"value": ""
+		},
+		{
+			"key": "offerId",
+			"value": ""
+		}
+	]
+}
