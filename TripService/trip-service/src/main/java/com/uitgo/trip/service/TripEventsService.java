@@ -3,6 +3,7 @@ package com.uitgo.trip.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uitgo.trip.domain.Trip;
 import com.uitgo.trip.dto.DriverLocation;
+import com.uitgo.trip.dto.DriverPositionResponse;
 import com.uitgo.trip.dto.sse.DriverLocationPayload;
 import com.uitgo.trip.dto.sse.PingPayload;
 import com.uitgo.trip.dto.sse.StatusPayload;
@@ -18,8 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.*;
 
 @Service
@@ -87,16 +86,19 @@ public class TripEventsService {
                     Long driverId = current.getDriverId();
                     if (driverId != null) {
                         try {
-                            DriverLocation loc = driverClient.getCurrentLocation(driverId);
-                            if (loc != null && loc.lat() != null && loc.lng() != null) {
-                                sendJson(emitter, "driver_location",
-                                        new DriverLocationPayload(
-                                                current.getId(),
-                                                driverId,
-                                                loc.lat(),
-                                                loc.lng(),
-                                                Instant.now().toString()
-                                        ));
+                            DriverPositionResponse response = driverClient.getCurrentLocation(driverId);
+                            if (response != null && "success".equals(response.getStatus())) {
+                                DriverLocation loc = response.getData();
+                                if (loc != null && loc.lat() != null && loc.lng() != null) {
+                                    sendJson(emitter, "driver_location",
+                                            new DriverLocationPayload(
+                                                    current.getId(),
+                                                    driverId,
+                                                    loc.lat(),
+                                                    loc.lng(),
+                                                    Instant.now().toString()
+                                            ));
+                                }
                             }
                         } catch (Exception ex) {
                             // log nhẹ, không cắt stream

@@ -1,20 +1,25 @@
 package com.uitgo.trip.service;
 
+import com.uitgo.trip.domain.Offer;
 import com.uitgo.trip.domain.Trip;
 import com.uitgo.trip.domain.TripRating;
 import com.uitgo.trip.dto.CreateTripReq;
 import com.uitgo.trip.dto.RateReq;
 import com.uitgo.trip.enums.TripStatus;
+import com.uitgo.trip.event.OfferRemovedEvent;
+import com.uitgo.trip.event.TripCancelledEvent;
 import com.uitgo.trip.repo.OfferRepository;
 import com.uitgo.trip.repo.TripRatingRepository;
 import com.uitgo.trip.repo.TripRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class TripService {
     private final OfferRepository offerRepo;
     private final TripRatingRepository ratingRepo;
     private final MatchingService matchingService;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public Trip createTrip(CreateTripReq req, Long passengerId) {
@@ -66,7 +72,14 @@ public class TripService {
         t.setStatus(TripStatus.CANCELED);
         t.setUpdatedAt(Instant.now());
 
+        List<Offer> pendings = offerRepo.findPendingsByTripId(t.getId());
+        // expire offers and publish events for each so listeners can update their SSE lists
         offerRepo.expireAllPendingsOfTrip(t.getId());
+        for (Offer o : pendings) {
+            publisher.publishEvent(new OfferRemovedEvent(this, o));
+            // also publish trip cancelled event for the specific driver so listeners can handle it
+            publisher.publishEvent(new TripCancelledEvent(this, o.getTripId(), o.getDriverId()));
+        }
 
         return tripRepo.save(t);
     }
