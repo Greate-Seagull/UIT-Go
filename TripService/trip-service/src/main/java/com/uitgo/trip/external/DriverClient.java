@@ -11,7 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 @FeignClient(name = "driver-service",
-        url = "${external.driver-service.base-url}")
+        url = "${external.driver-service.base-url}",
+        dismiss404 = true
+)
 public interface DriverClient {
 
     @GetMapping("/api/drivers/search")

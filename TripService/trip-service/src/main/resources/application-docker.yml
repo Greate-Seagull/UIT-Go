@@ -1,12 +1,11 @@
 server:
-    port: 8082
+    port: 8080
 
 spring:
     datasource:
-        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://trip-postgres:5432/tripdb}
-        username: ${SPRING_DATASOURCE_USERNAME:user}
-        password: ${SPRING_DATASOURCE_PASSWORD:pass}
-        driver-class-name: org.postgresql.Driver
+        url: ${SPRING_DATASOURCE_URL}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
     jpa:
         hibernate:
             ddl-auto: update
@@ -26,6 +25,5 @@ management:
 
 external:
     driver-service:
-        # base-url: http://driver-service:3000
-        # base-url: http://localhost:3000
-        base-url: http://host.docker.internal:3000
+        base-url: ${EXTERNAL_DRIVER_SERVICE_BASE_URL:host.docker.internal:8081}
+        enabled: ${EXTERNAL_DRIVER_SERVICE_ENABLED:true}
