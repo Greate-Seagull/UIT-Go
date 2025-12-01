@@ -45,7 +45,7 @@ RUN python -m pip install --upgrade pip
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
-
+    
 # Switch to the non-privileged user to run the application.
 USER appuser
 
@@ -60,4 +60,13 @@ EXPOSE 8000
 
 # Run the application.
 
-CMD python manage.py runserver
+# run gunicorn with uvicorn workers
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "UserService.asgi:application", \
+     "--bind", "0.0.0.0:8000", \
+     "--workers", "4", \
+     "--worker-connections", "1000", \
+     "--backlog", "2048", \
+     "--timeout", "30", \
+     "--keep-alive", "5", \
+     "--max-requests", "10000", \
+     "--max-requests-jitter", "1000"]
