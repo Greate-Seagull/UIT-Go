@@ -32,6 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ec2-18-138-243-172.ap-southeast-1.compute.amazonaws.com',
+    'localhost',
 ]
 
 
@@ -204,6 +205,8 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             "IGNORE_EXCEPTIONS": True,
+            "SOCKET_CONNECT_TIMEOUT": 5,  
+            "SOCKET_TIMEOUT": 5,
         }
     }
 }
