@@ -16,16 +16,22 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import get_user_model
 from django.db import transaction
 import smtplib
+from django.core.cache import cache
 
 class Me(APIView):
     permission_classes=[IsAuthenticated]
     def get(self, request):
         user = request.user
         self.check_object_permissions(request, user)
-        serializer = CustomerUserV1Serializers(user)
+        cache_key = f"user_me_{user.id}"
+        data = cache.get(cache_key)
+        if not data:
+            serializer = CustomerUserV1Serializers(user)
+            data = serializer.data
+            cache.set(cache_key, data, timeout=300)  # Cache for 5 minutes
         return Response({
             'message': 'Retrieve success',
-            'data': serializer.data
+            'data': data
         })
     
 
@@ -103,7 +109,6 @@ def activateEmail(request, user, to_email):
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
-
 
 
 class ActivateAccountView(APIView):

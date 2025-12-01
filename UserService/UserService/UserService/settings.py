@@ -190,3 +190,17 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://127.0.0.1:8000'
 ]
+
+
+REDIS_URL = f'redis://{os.environ.get('USERNAME_REDIS')}:{os.environ.get('PASSWORD_REDIS')}@{os.environ.get('HOST_REDIS')}:{os.environ.get('PORT_REDIS')}/0'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            "IGNORE_EXCEPTIONS": True,
+        }
+    }
+}
