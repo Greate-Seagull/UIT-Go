@@ -61,12 +61,14 @@ EXPOSE 8000
 # Run the application.
 
 # run gunicorn with uvicorn workers
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "UserService.asgi:application", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "4", \
-     "--worker-connections", "1000", \
-     "--backlog", "2048", \
-     "--timeout", "30", \
-     "--keep-alive", "5", \
-     "--max-requests", "10000", \
-     "--max-requests-jitter", "1000"]
+CMD gunicorn -k uvicorn.workers.UvicornWorker UserService.asgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers ${GUNICORN_WORKERS:-9} \
+    --worker-connections ${GUNICORN_WORKER_CONNECTIONS:-2000} \
+    --backlog 4096 \
+    --timeout ${GUNICORN_TIMEOUT:-30} \
+    --keep-alive 5 \
+    --max-requests 10000 \
+    --max-requests-jitter 1000 \
+    --log-level ${GUNICORN_LOG_LEVEL:-warning} \
+    --worker-tmp-dir /dev/shm
