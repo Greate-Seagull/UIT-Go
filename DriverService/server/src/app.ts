@@ -1,10 +1,13 @@
 import express from "express";
+import jsend from "jsend";
 import restRouter from "./presentation/routers/rest.router";
 import { createTrpcMiddleware } from "./presentation/routers/trpc.router";
 
 const app = express();
 
 app.use(express.json());
+app.use(jsend.middleware);
+
 app.use("/api", restRouter);
 app.use("/trpc", createTrpcMiddleware);
 

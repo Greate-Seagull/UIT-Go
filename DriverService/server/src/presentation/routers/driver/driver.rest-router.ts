@@ -1,20 +1,20 @@
 import { Router } from "express";
+import { controller } from "../../controllers/generic.controller";
 import {
-	controlAcceptTrip,
-	controlCompleteTrip,
-	controlGetPosition,
-	controlRejectTrip,
-	controlSearchDriver,
-	controlStartAccepting,
-} from "../../controllers/driver.controller";
+	getPositionUsecase,
+	searchDriverUsecase,
+	signInUsecase,
+	signUpUsecase,
+} from "../../../composition-root";
+import authenticatedDriverRouter from "./authenticated-driver.rest-router";
 
 const router = Router();
 
-router.put("/me/start", controlStartAccepting);
-router.put("/me/accept", controlAcceptTrip);
-router.put("/me/complete", controlCompleteTrip);
-router.get("/search", controlSearchDriver);
-router.put("/me/reject", controlRejectTrip);
-router.get("/:driverId/position", controlGetPosition);
+router.use("/me", authenticatedDriverRouter);
+
+router.post("/sign-up", controller(signUpUsecase));
+router.post("/sign-in", controller(signInUsecase));
+router.get("/search", controller(searchDriverUsecase));
+router.get("/:id/position", controller(getPositionUsecase));
 
 export default router;

@@ -1,9 +1,10 @@
-import { DriverState } from "../domain/driver.entity";
+import { DriverState } from "../domain/entities/driver.entity";
 import { DriverRepository } from "../infrastructure/repositories/driver.repository";
 import { TransactionManager } from "../infrastructure/repositories/transaction";
+import { logger } from "../infrastructure/logger/pino.logger";
 
 export class StartAcceptingUsecaseInput {
-	id!: number;
+	authId!: number;
 }
 
 export class StartAcceptingUsecaseOutput {
@@ -19,18 +20,62 @@ export class StartAcceptingUsecase {
 	async execute(
 		input: StartAcceptingUsecaseInput
 	): Promise<StartAcceptingUsecaseOutput> {
-		let driver = await this.driverRepository.getById(input.id);
-		if (!driver) throw Error(`Cannot find driver with id: ${input.id}`);
+		logger.info("Start StartAcceptingUsecase.execute", {
+			usecase: "StartAccepting",
+			driverId: input.authId,
+		});
 
-		driver.state = DriverState.READY;
+		try {
+			logger.debug("Fetching driver", {
+				driverId: input.authId,
+			});
 
-		const updatedDriver = await this.transactionManager.transaction(
-			async (transaction) => {
-				return await this.driverRepository.save(transaction, driver);
+			let driver = await this.driverRepository.getById(input.authId);
+			if (!driver) {
+				logger.error("Driver not found", {
+					driverId: input.authId,
+				});
+				throw Error(`Cannot find driver with id: ${input.authId}`);
 			}
-		);
 
-		let result = new StartAcceptingUsecaseOutput(updatedDriver.state);
-		return result;
+			logger.info("Updating driver state to READY", {
+				driverId: input.authId,
+				previousState: driver.state,
+				newState: DriverState.READY,
+			});
+
+			driver.state = DriverState.READY;
+
+			const updatedDriver = await this.transactionManager.transaction(
+				async (transaction) => {
+					return await this.driverRepository.save(
+						transaction,
+						driver
+					);
+				}
+			);
+
+			logger.debug("Driver state saved", {
+				driverId: input.authId,
+				finalState: updatedDriver.state,
+			});
+
+			let result = new StartAcceptingUsecaseOutput(updatedDriver.state);
+
+			logger.info("StartAcceptingUsecase completed", {
+				driverId: input.authId,
+				finalState: result.state,
+			});
+
+			return result;
+		} catch (err: any) {
+			logger.error("StartAcceptingUsecase failed", {
+				usecase: "StartAccepting",
+				driverId: input.authId,
+				error: err.message,
+				stack: err.stack,
+			});
+			throw err;
+		}
 	}
 }

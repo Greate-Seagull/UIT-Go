@@ -1,0 +1,33 @@
+resource "aws_iam_role" "role_manager" {
+    name = "RoleManagement"
+
+    assume_role_policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": [
+                    "iam:CreateInstanceProfile",
+                    "iam:DeleteInstanceProfile",
+                    "iam:GetRole",
+                    "iam:UpdateAssumeRolePolicy",
+                    "iam:GetInstanceProfile",
+                    "iam:CreateRole",
+                    "iam:DeleteRole",
+                    "iam:AttachRolePolicy",
+                    "iam:PutRolePolicy",
+                    "iam:AddRoleToInstanceProfile",
+                    "iam:ListInstanceProfilesForRole",
+                    "iam:PassRole",
+                    "iam:ListAttachedRolePolicies",
+                    "iam:ListRolePolicies"
+                ],
+                "Resource": [
+                    "arn:aws:iam::119994653133:instance-profile/*",
+                    "arn:aws:iam::119994653133:role/*"
+                ]
+            }
+        ]
+    })
+}

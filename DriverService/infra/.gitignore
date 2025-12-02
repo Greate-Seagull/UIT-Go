@@ -1,0 +1,31 @@
+### TERRAFORM ###
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.*
+
+# Optional (ignore lock file if you don't want machine-specific provider pins)
+# .terraform.lock.hcl
+
+### ENV FILES ###
+*.env
+*.env.*
+
+
+### LOGS AND TEMP ###
+*.log
+*.backup
+*.bak
+
+### DOCKER ###
+docker-data/
+**/docker-compose.override.yml
+
+### OS / EDITOR ###
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+*.pem

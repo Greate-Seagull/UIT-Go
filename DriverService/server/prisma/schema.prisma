@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/client"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -15,12 +15,25 @@ datasource db {
 }
 
 model Driver {
-  id    Int         @id @default(autoincrement())
-  state DriverState @default(UNAVAILABLE)
+  id           Int         @id @default(autoincrement())
+  state        DriverState @default(UNAVAILABLE)
+  name         String?
+  licensePlate String?
+  accounts     Account[]
 }
 
 enum DriverState {
   READY
   TRANSPORTING
   UNAVAILABLE
+}
+
+model Account {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  salt     String
+  driverId Int
+
+  driver Driver @relation(fields: [driverId], references: [id])
 }
