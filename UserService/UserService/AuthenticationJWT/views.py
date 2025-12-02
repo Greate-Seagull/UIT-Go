@@ -81,8 +81,8 @@ class UserRegistrationView(APIView):
                 with transaction.atomic():
                     user = serializer.save(is_active=False) 
                     email = serializer.validated_data['email']
-                    activateEmail(request, user, email)
-                return Response({'message': 'User created successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)  
+                    url = activateEmail(request, user, email)
+                return Response({'message': 'User created successfully', 'data': serializer.data, 'activation_link': url}, status=status.HTTP_201_CREATED)  
             except smtplib.SMTPException as e: # Bắt lỗi SMTP cụ thể
                 # Nếu gửi mail lỗi, transaction sẽ tự động rollback
                 # (người dùng sẽ không được tạo)
@@ -110,7 +110,15 @@ def activateEmail(request, user, to_email):
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
-
+    # thêm phần trả về link kích hoạt để test
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    if isinstance(uid, bytes):
+        uid = uid.decode()
+    token = account_activation_token.make_token(user)
+    domain = get_current_site(request).domain
+    protocol = 'https' if request.is_secure() else 'http'
+    activation_link = f"{protocol}://{domain}/api/v1/users/activate/{uid}/{token}/"
+    return activation_link
 
 class ActivateAccountView(APIView):
     permission_classes=[AllowAny]

@@ -59,7 +59,7 @@ class TripCancelView(APIView):
     def post(self, request, trip_id):
         try:
             user_id = request.user.id
-            headers = {'X-User-Id': user_id}
+            headers = {'X-User-Id': str(user_id)}
             res = requests.post(f'{URL_TRIPSERVICE}trips/{trip_id}/cancel', headers=headers)
             if res.status_code == 200:
                 return Response({
