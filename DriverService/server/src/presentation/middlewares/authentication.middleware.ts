@@ -13,8 +13,8 @@ export const bearerTokenHeaderSchema = z
 	});
 
 export function authenticationMiddleware(
-	req: Request,
-	res: Response,
+	req: any,
+	res: any,
 	next: NextFunction
 ) {
 	logger.info("AuthenticationMiddleware: Start", {
@@ -26,7 +26,7 @@ export function authenticationMiddleware(
 		logger.debug("AuthenticationMiddleware: Checking Authorization header");
 		const result = authenticate(req.headers.authorization);
 
-		req.body.authId = result.id;
+		req.authId = result.id;
 		logger.info("AuthenticationMiddleware: Authenticated", {
 			userId: result.id,
 		});

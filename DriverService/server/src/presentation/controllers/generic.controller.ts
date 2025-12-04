@@ -7,6 +7,7 @@ export function controller(usecase: any) {
 			...(req.body || {}),
 			...req.params,
 			...req.query,
+			authId: req.authId,
 		};
 
 		logger.debug("Incoming request", {
