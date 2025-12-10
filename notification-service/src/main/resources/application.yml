@@ -1,0 +1,32 @@
+notification:
+  trip-created-queue: "notification.trip-created"
+  trip-cancelled-queue: "notification.trip-cancelled"
+  trip-events-exchange: "trip-events-exchange"
+  support-email: "minh@gmail.com"
+
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/notification_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: user@example.com
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
