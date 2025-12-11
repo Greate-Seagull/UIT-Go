@@ -1,3 +1,9 @@
+# BÁO CÁO CUỐI KỲ UIT-GO
+## Các thành viên
+- 23520592 - Cao Thành Huy
+- 23520557 - Dương Quốc Hưng
+- 23520946 - Nguyễn Xuân Nhật Minh
+
 # Tổng quan kiến trúc hệ thống
 ![Detailed Architecture Diagram](module_detailed_architecture.png)
 
