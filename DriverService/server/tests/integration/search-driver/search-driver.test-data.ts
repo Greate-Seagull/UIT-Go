@@ -1,4 +1,4 @@
-import { DriverPosition } from "../../../src/domain/driver-position.entity";
+import { DriverPosition } from "../../../src/domain/entities/driver-position.entity";
 
 export const queryInput = {
 	lat: 1,

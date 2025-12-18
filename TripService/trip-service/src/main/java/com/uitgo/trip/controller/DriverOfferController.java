@@ -1,19 +1,13 @@
-
 package com.uitgo.trip.controller;
 
 import com.uitgo.trip.domain.Offer;
 import com.uitgo.trip.domain.Trip;
-import com.uitgo.trip.enums.OfferStatus;
-import com.uitgo.trip.enums.TripStatus;
-import com.uitgo.trip.repo.OfferRepository;
-import com.uitgo.trip.repo.TripRepository;
 import com.uitgo.trip.service.DriverOfferService;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -26,9 +20,9 @@ public class DriverOfferController {
         this.driverOfferService = driverOfferService;
     }
 
-    @GetMapping
-    public List<Offer> list(@RequestHeader("X-Driver-Id") Long driverId) {
-        return driverOfferService.listPendingOffers(driverId);
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(@RequestHeader("X-Driver-Id") Long driverId) {
+        return driverOfferService.streamOffers(driverId);
     }
 
     @PostMapping("/{id}/accept")

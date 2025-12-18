@@ -3,13 +3,16 @@ package com.uitgo.trip.service;
 import com.uitgo.trip.domain.Offer;
 import com.uitgo.trip.domain.Trip;
 import com.uitgo.trip.dto.DriverNearby;
+import com.uitgo.trip.dto.DriverSearchResponse;
 import com.uitgo.trip.enums.OfferStatus;
 import com.uitgo.trip.enums.TripStatus;
+import com.uitgo.trip.event.OfferCreatedEvent;
 import com.uitgo.trip.external.DriverClient;
 import com.uitgo.trip.repo.OfferRepository;
 import com.uitgo.trip.repo.TripRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ public class MatchingService {
     private final TripRepository tripRepo;
     private final OfferRepository offerRepo;
     private final DriverClient driverClient;
+    private final ApplicationEventPublisher publisher;
 
     @Async
     public void triggerMatchingAsync(Long tripId) {
@@ -43,30 +47,28 @@ public class MatchingService {
             return;
         }
 
-        List<DriverNearby> drivers;
-        try {
-            drivers = driverClient.search(trip.getPickupLat(), trip.getPickupLng(), 5000, 10);
-        } catch (Exception ex) {
-            log.warn("Driver service call failed for trip {}: {}", tripId, ex.toString());
-            return; // giữ FINDING_DRIVER
-        }
-
-        if (drivers == null || drivers.isEmpty()) {
+        DriverSearchResponse resp = driverClient.search(trip.getPickupLat(), trip.getPickupLng(), 10000, 10);
+        if (resp == null || resp.getData() == null || resp.getData().isEmpty()) {
             log.info("No nearby drivers for trip {}", tripId);
             return;
         }
 
-        Long driverId = drivers.get(0).driverId();
-        if (driverId == null) {
-            log.warn("driverId missing in first driver result for trip {}", tripId);
+        List<DriverNearby> drivers = resp.getData();
+        DriverNearby first = drivers.get(0);
+        if (first == null || first.driverId() == null) {
+            log.warn("No valid driver returned for trip {}", tripId);
             return;
         }
 
+        Long driverId = first.driverId();
+
         Offer offer = new Offer(trip.getId(), driverId, OfferStatus.PENDING, Instant.now().plusSeconds(15 * 60), Instant.now());
-        offerRepo.save(offer);
+        Offer saved = offerRepo.save(offer);
         trip.setStatus(TripStatus.OFFERING);
         trip.setUpdatedAt(Instant.now());
         tripRepo.save(trip);
+
+        publisher.publishEvent(new OfferCreatedEvent(this, saved));
 
         log.info("Offered driver {} for trip {}", driverId, tripId);
     }

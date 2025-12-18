@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import requests
 
-URL_TRIPSERVICE = 'http://host.docker.internal:8082/'
+URL_TRIPSERVICE = 'https://uitgo-trip-service.azurewebsites.net/'
 
 class TripServiceViews(APIView):
     permission_classes = [IsAuthenticated]
@@ -15,7 +15,7 @@ class TripServiceViews(APIView):
             'Content-Type': 'application/json'
         }
         try:
-            res = requests.post(f'{URL_TRIPSERVICE}trips', json=request.data, headers=headers, timeout=5)
+            res = requests.post(f'{URL_TRIPSERVICE}trips', json=request.data, headers=headers, timeout=15)
             data = res.json() if res.content else {}
 
             if res.ok:
@@ -59,7 +59,7 @@ class TripCancelView(APIView):
     def post(self, request, trip_id):
         try:
             user_id = request.user.id
-            headers = {'X-User-Id': user_id}
+            headers = {'X-User-Id': str(user_id)}
             res = requests.post(f'{URL_TRIPSERVICE}trips/{trip_id}/cancel', headers=headers)
             if res.status_code == 200:
                 return Response({

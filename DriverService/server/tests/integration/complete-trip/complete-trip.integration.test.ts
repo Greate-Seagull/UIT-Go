@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../../src/app";
 import { prisma } from "../../../src/composition-root";
 import { driver } from "./complete-trip.test-data";
-import { DriverState } from "../../../src/domain/driver.entity";
+import { DriverState } from "../../../src/domain/entities/driver.entity";
 
 describe("Complete trip integration test", () => {
 	let path = "/api/drivers/me/complete";

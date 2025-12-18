@@ -1,13 +1,10 @@
 services:
-    trip-service:
+    driver-service:
         build: .
         depends_on:
             - redis
-        environment:
-            DATABASE_URL: "${DATABASE_URL}"
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            TRIP_SERVICE_URL: http://host.docker.internal:8082
+        env_file:
+            - .env
         ports:
             - "3000:3000"
 

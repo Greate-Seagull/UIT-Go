@@ -2,3 +2,9 @@ node_modules
 build
 tests
 src/generated
+.git
+.gitignore
+.DS_Store
+.idea
+npm-debug.log
+yarn-error.log

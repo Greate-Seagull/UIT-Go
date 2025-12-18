@@ -1,0 +1,9 @@
+services:
+    my-app:
+        image: ${ECR_URL} # Use your ECR image
+        container_name: my-app
+        env_file:
+            - .env # Will be fetched from Secrets Manager
+        ports:
+            - "80:3000"
+        restart: unless-stopped

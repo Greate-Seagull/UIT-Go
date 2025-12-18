@@ -16,6 +16,7 @@ spring:
 external:
   driver-service:
     base-url: ${EXTERNAL_DRIVER_SERVICE_BASE_URL}
+    enabled: ${EXTERNAL_DRIVER_SERVICE_ENABLED:true}
 
 feign:
   client:

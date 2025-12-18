@@ -62,3 +62,4 @@ EXPOSE 8000
 
 # run gunicorn with uvicorn workers
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "UserService.asgi:application", "--bind", "0.0.0.0:8000", "--workers", "4"]
+# CMD python manage.py runserver 0.0.0.0:8000

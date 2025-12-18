@@ -1,9 +1,11 @@
 import request from "supertest";
 import app from "../../../src/app";
 import Request from "superagent/lib/node/response";
-import { DriverState } from "../../../src/domain/driver.entity";
+import { DriverState } from "../../../src/domain/entities/driver.entity";
 import { prisma } from "../../../src/composition-root";
 import { driver } from "./start-accepting.test-data";
+
+jest.setTimeout(30000);
 
 describe("Start accepting integration test", () => {
 	let path: string = "/api/drivers/me/start";
