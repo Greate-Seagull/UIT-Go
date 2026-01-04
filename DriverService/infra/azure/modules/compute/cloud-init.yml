@@ -1,0 +1,189 @@
+#cloud-config
+# Cloud-init with template variables for scaling
+
+# System updates
+package_update: true
+package_upgrade: true
+
+# Install required packages
+packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - git
+    - vim
+    - htop
+    - net-tools
+    - unattended-upgrades
+    - fail2ban
+    - ufw
+    - jq
+
+# Configure hostname based on instance
+hostname: docker-vm-${instance_id}
+fqdn: docker-vm-${instance_id}.${environment}.local
+
+# Write configuration files
+write_files:
+    # Docker daemon configuration
+    - path: /etc/docker/daemon.json
+      content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            },
+            "metrics-addr": "0.0.0.0:9323",
+            "experimental": true
+          }
+      permissions: "0644"
+
+    # Instance metadata
+    - path: /opt/deployment/instance-info.json
+      content: |
+          {
+            "instance_id": "${instance_id}",
+            "environment": "${environment}",
+            "initialized_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+      permissions: "0644"
+
+    # Deployment script for updates
+    - path: /usr/local/bin/deploy-app.sh
+      content: |
+          #!/bin/bash
+          set -e
+
+          DEPLOY_DIR="/opt/deployment/app"
+          REPO_URL="$1"
+          BRANCH="$${2:-main}"
+
+          echo "=== Deployment Started at $(date) ==="
+          echo "Instance: ${instance_id}"
+          echo "Environment: ${environment}"
+
+          # Clone or pull repository
+          if [ -d "$DEPLOY_DIR" ]; then
+            echo "Updating existing repository..."
+            cd "$DEPLOY_DIR"
+            git pull origin "$BRANCH"
+          else
+            echo "Cloning repository..."
+            git clone -b "$BRANCH" "$REPO_URL" "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+          fi
+
+          # Deploy with Docker Compose
+          if [ -f "docker-compose.yml" ]; then
+            echo "Deploying with Docker Compose..."
+            docker-compose down || true
+            docker-compose pull
+            docker-compose up -d
+            echo "Deployment completed successfully!"
+          else
+            echo "No docker-compose.yml found!"
+            exit 1
+          fi
+
+          echo "=== Deployment Finished at $(date) ==="
+      permissions: "0755"
+
+    # Health check endpoint script
+    - path: /usr/local/bin/health-check.sh
+      content: |
+          #!/bin/bash
+          # Simple health check script
+
+          # Check Docker is running
+          if ! systemctl is-active --quiet docker; then
+            echo "Docker is not running"
+            exit 1
+          fi
+
+          # Check if containers are running
+          RUNNING=$(docker ps -q | wc -l)
+          if [ "$RUNNING" -eq 0 ]; then
+            echo "No containers running"
+            exit 1
+          fi
+
+          echo "OK - $RUNNING containers running"
+          exit 0
+      permissions: "0755"
+
+# Run commands after package installation
+runcmd:
+    # Install Docker
+    - echo "Installing Docker on instance ${instance_id}..."
+    - curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+    - sh /tmp/get-docker.sh
+    - usermod -aG docker azureuser
+    - systemctl enable docker
+    - systemctl start docker
+
+    # Install Docker Compose
+    - echo "Installing Docker Compose..."
+    - COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+    - curl -L "https://github.com/docker/compose/releases/download/$${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
+    - ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+    # Create deployment directory
+    - mkdir -p /opt/deployment/app
+    - chown -R azureuser:azureuser /opt/deployment
+
+    # Configure automatic security updates
+    - dpkg-reconfigure -plow unattended-upgrades
+    - systemctl enable unattended-upgrades
+    - systemctl start unattended-upgrades
+
+    # Configure fail2ban
+    - systemctl enable fail2ban
+    - systemctl start fail2ban
+
+    # Configure UFW firewall
+    - ufw --force enable
+    - ufw allow 22/tcp
+    - ufw allow 80/tcp
+    - ufw allow 443/tcp
+    - ufw allow 8080/tcp
+
+    # Set timezone
+    - timedatectl set-timezone Asia/Ho_Chi_Minh
+
+    # Install Azure CLI for automation (optional)
+    - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+    # Clean up
+    - rm -f /tmp/get-docker.sh
+    - apt-get autoremove -y
+    - apt-get clean
+
+    # Log instance information
+    - echo "Instance ${instance_id} initialized in ${environment} environment" >> /var/log/instance-init.log
+
+# Final message
+final_message: |
+    ================================================
+    Docker VM Instance ${instance_id} Ready!
+    Environment: ${environment}
+    ================================================
+
+    Installed:
+    - Docker Engine + Compose
+    - Deployment automation scripts
+    - Health check endpoint
+    - Azure CLI
+
+    Deployment Directory: /opt/deployment
+
+    Quick Deploy:
+      sudo /usr/local/bin/deploy-app.sh <repo-url> <branch>
+
+    Health Check:
+      sudo /usr/local/bin/health-check.sh
+
+    ================================================

@@ -1,0 +1,15 @@
+services:
+    driver-service:
+        image: ${CR_URL}
+        container_name: server
+        restart: always
+        depends_on:
+            - redis
+        env_file:
+            - .env
+        ports:
+            - "80:3000"
+
+    redis:
+        image: redis:latest
+        container_name: redis
