@@ -18,57 +18,32 @@ export class UpdatePositionUsecase {
 	) {}
 
 	async execute(input: UpdatePositionUsecaseInput) {
-		logger.info("Start UpdatePositionUsecase.execute", {
-			usecase: "UpdatePosition",
+		logger.info("Updating position started", {
 			driverId: input.id,
-			lat: input.lat,
-			long: input.long,
 		});
 
 		try {
-			logger.debug("Creating/updating driver position", {
-				driverId: input.id,
-				lat: input.lat,
-				long: input.long,
-			});
-
 			let driverPosition = DriverPosition.create(input);
 
 			const updated = await this.driverPositionRepository.save(
 				driverPosition
 			);
 
-			logger.debug("Driver position saved", {
-				driverId: input.id,
-				lat: updated.lat,
-				long: updated.long,
-			});
-
 			await this.driverPositionRepository.expire(updated, 5);
-
-			logger.debug("Driver position expiration set", {
-				driverId: input.id,
-				ttlMinutes: 5,
-			});
 
 			const output = new UpdatePositionUsecaseOutput(
 				updated.lat,
 				updated.long
 			);
 
-			logger.info("UpdatePositionUsecase completed", {
+			logger.info("Updating position completed", {
 				driverId: input.id,
-				lat: output.lat,
-				long: output.long,
 			});
 
 			return output;
 		} catch (err: any) {
-			logger.error("UpdatePositionUsecase failed", {
-				usecase: "UpdatePosition",
+			logger.error("Updating position failed", {
 				driverId: input.id,
-				lat: input.lat,
-				long: input.long,
 				error: err.message,
 				stack: err.stack,
 			});

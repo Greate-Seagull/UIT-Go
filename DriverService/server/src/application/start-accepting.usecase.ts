@@ -20,29 +20,18 @@ export class StartAcceptingUsecase {
 	async execute(
 		input: StartAcceptingUsecaseInput
 	): Promise<StartAcceptingUsecaseOutput> {
-		logger.info("Start StartAcceptingUsecase.execute", {
-			usecase: "StartAccepting",
+		logger.info("Starting accepting started", {
 			driverId: input.authId,
 		});
 
 		try {
-			logger.debug("Fetching driver", {
-				driverId: input.authId,
-			});
-
 			let driver = await this.driverRepository.getById(input.authId);
 			if (!driver) {
-				logger.error("Driver not found", {
+				logger.warn("Driver not found", {
 					driverId: input.authId,
 				});
 				throw Error(`Cannot find driver with id: ${input.authId}`);
 			}
-
-			logger.info("Updating driver state to READY", {
-				driverId: input.authId,
-				previousState: driver.state,
-				newState: DriverState.READY,
-			});
 
 			driver.state = DriverState.READY;
 
@@ -55,22 +44,16 @@ export class StartAcceptingUsecase {
 				}
 			);
 
-			logger.debug("Driver state saved", {
-				driverId: input.authId,
-				finalState: updatedDriver.state,
-			});
-
 			let result = new StartAcceptingUsecaseOutput(updatedDriver.state);
 
-			logger.info("StartAcceptingUsecase completed", {
+			logger.info("Starting accepting completed", {
 				driverId: input.authId,
 				finalState: result.state,
 			});
 
 			return result;
 		} catch (err: any) {
-			logger.error("StartAcceptingUsecase failed", {
-				usecase: "StartAccepting",
+			logger.error("Starting accepting failed", {
 				driverId: input.authId,
 				error: err.message,
 				stack: err.stack,

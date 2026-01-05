@@ -16,52 +16,35 @@ export class RejectTripUsecase {
 	) {}
 
 	async execute(input: RejectTripUsecaseInput) {
-		logger.info("Start RejectTripUsecase.execute", {
-			usecase: "RejectTrip",
+		logger.info("Rejecting trip started", {
 			driverId: input.authId,
 			offerId: input.offerId,
 		});
 
 		try {
-			logger.debug("Fetching driver", {
-				driverId: input.authId,
-			});
-
 			const driver = await this.driverRepository.getById(input.authId);
 			if (!driver) {
-				logger.error("Driver not found", {
+				logger.warn("Driver not found", {
 					driverId: input.authId,
 				});
 				throw Error(`Cannot find driver with id: ${input.authId}`);
 			}
-
-			logger.info("Calling Trip API to reject offer", {
-				driverId: input.authId,
-				offerId: input.offerId,
-			});
 
 			const tripResult = await this.tripApiClient.reject(
 				input.authId,
 				input.offerId
 			);
 
-			logger.debug("Trip offer rejected successfully", {
-				driverId: input.authId,
-				offerId: input.offerId,
-				tripResult,
-			});
-
 			const output = new RejectTripUsecaseOutput();
 
-			logger.info("RejectTripUsecase completed", {
+			logger.info("Rejecting trip completed", {
 				driverId: input.authId,
 				offerId: input.offerId,
 			});
 
 			return output;
 		} catch (err: any) {
-			logger.error("RejectTripUsecase failed", {
-				usecase: "RejectTrip",
+			logger.error("Rejecting trip failed", {
 				driverId: input.authId,
 				offerId: input.offerId,
 				error: err.message,

@@ -21,8 +21,6 @@ export class DriverRepository {
 	}
 
 	async getById(id: number): Promise<any> {
-		logger.debug("DriverRepository.getById called", { id });
-
 		const key = this.cacheKey(id);
 
 		// Try cache first
@@ -30,13 +28,8 @@ export class DriverRepository {
 		if (cached) {
 			const normalized = normalizeCachedObject(cached);
 			const domain = Driver.rehydrate(normalized);
-			logger.info("Driver loaded from cache", {
-				data: cached,
-			});
 			return domain;
 		}
-
-		logger.warn("Driver cache MISS → loading from DB", { id });
 
 		const row = await this.prisma.driver.findUnique({
 			where: { id },
@@ -44,7 +37,6 @@ export class DriverRepository {
 		});
 
 		if (!row) {
-			logger.error("Driver not found in DB", { id });
 			return null;
 		}
 
@@ -53,14 +45,10 @@ export class DriverRepository {
 		// Write to cache
 		await this.cache.set(key, domain, DriverRepository.cacheTtl);
 
-		logger.info("Driver cached after DB fetch", { id });
-
 		return domain;
 	}
 
 	async add(tx: Transaction | null, entity: any): Promise<any> {
-		logger.debug("DriverRepository.add called", { id: entity.id });
-
 		const repo = tx ? tx.driver : this.prisma.driver;
 
 		const row = await repo.create({
@@ -76,17 +64,10 @@ export class DriverRepository {
 			DriverRepository.cacheTtl
 		);
 
-		logger.info("Driver added & cached", { id: domain.id });
-
 		return domain;
 	}
 
 	async save(tx: Transaction | null, entity: any): Promise<any> {
-		logger.debug("DriverRepository.save called", {
-			id: entity.id,
-			newState: entity.state,
-		});
-
 		const repo = tx ? tx.driver : this.prisma.driver;
 
 		const row = await repo.update({
@@ -103,11 +84,6 @@ export class DriverRepository {
 			domain,
 			DriverRepository.cacheTtl
 		);
-
-		logger.info("Driver updated & cache refreshed", {
-			id: entity.id,
-			state: entity.state,
-		});
 
 		return domain;
 	}

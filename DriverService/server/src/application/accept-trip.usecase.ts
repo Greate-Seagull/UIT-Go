@@ -21,18 +21,15 @@ export class AcceptTripUsecase {
 	) {}
 
 	async execute(input: AcceptTripUsecaseInput) {
-		logger.info("Start AcceptTripUsecase.execute", {
-			usecase: "AcceptTrip",
+		logger.info("Accepting trip started", {
 			driverId: input.authId,
 			offerId: input.offerId,
 		});
 
 		try {
-			logger.debug("Fetching driver", { driverId: input.authId });
-
 			const driver = await this.driverRepository.getById(input.authId);
 			if (!driver) {
-				logger.error("Driver not found", {
+				logger.warn("Driver not found", {
 					driverId: input.authId,
 				});
 				throw Error(`Cannot find driver with id: ${input.authId}`);
@@ -48,28 +45,12 @@ export class AcceptTripUsecase {
 				);
 			}
 
-			logger.info("Calling trip service to assign driver", {
-				driverId: input.authId,
-				offerId: input.offerId,
-			});
-
 			const tripResult = await this.tripApiClient.assignDriver(
 				input.authId,
 				input.offerId
 			);
 
-			logger.debug("Trip service assigned successfully", {
-				driverId: input.authId,
-				offerId: input.offerId,
-				tripResult,
-			});
-
 			driver.state = DriverState.TRANSPORTING;
-
-			logger.info("Saving updated driver state", {
-				driverId: input.authId,
-				newState: driver.state,
-			});
 
 			const updatedDriver = await this.transactionManager.transaction(
 				async (transaction) => {
@@ -82,15 +63,14 @@ export class AcceptTripUsecase {
 
 			let output = new AcceptTripUsecaseOutput(updatedDriver.state);
 
-			logger.info("AcceptTripUsecase completed", {
+			logger.info("Accepting trip completed", {
 				driverId: input.authId,
 				finalState: updatedDriver.state,
 			});
 
 			return output;
 		} catch (err: any) {
-			logger.error("AcceptTripUsecase failed", {
-				usecase: "AcceptTrip",
+			logger.error("Accepting trip failed", {
 				driverId: input.authId,
 				offerId: input.offerId,
 				error: err.message,

@@ -10,11 +10,6 @@ export function controller(usecase: any) {
 			authId: req.authId,
 		};
 
-		logger.debug("Incoming request", {
-			usecase: usecase.constructor.name,
-			input,
-		});
-
 		try {
 			const result = await new Promise((resolve, reject) => {
 				const ok = requestQueue.push({
@@ -25,21 +20,10 @@ export function controller(usecase: any) {
 				});
 
 				if (!ok) {
-					logger.warn("Queue is full, rejecting request", {
-						usecase: usecase.constructor.name,
-					});
 					return reject(new Error("Server overloaded"));
-				} else {
-					logger.debug("Request queued", {
-						usecase: usecase.constructor.name,
-					});
 				}
 			});
 
-			logger.info("Request completed successfully", {
-				usecase: usecase.constructor.name,
-				result,
-			});
 			res.jsend.success(result);
 		} catch (error: any) {
 			logger.error("Request failed", {

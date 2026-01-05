@@ -28,4 +28,6 @@ Thumbs.db
 .vscode/
 .idea/
 
-*.pem
+**/.ssh/
+**/*.pem
+**/*.key
