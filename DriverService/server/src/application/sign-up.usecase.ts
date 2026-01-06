@@ -30,7 +30,7 @@ export class SignUpUseCase {
 	) {}
 
 	async execute(input: any) {
-		logger.info("Signing up started", { input });
+		logger.info("Signing up started", { username: input.username });
 
 		try {
 			const parsedInput = inputSchema.parse(input);
