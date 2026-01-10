@@ -1,3 +1,5 @@
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import Redis from "ioredis";
 import axios from "axios";
@@ -24,7 +26,16 @@ import {
 import { SignInUsecase } from "./application/sign-in.usecase";
 import { GetSelfInfoUsecase } from "./application/get-self.usecase";
 
-export const prisma = new PrismaClient();
+export const pool = new Pool({
+	connectionString: config.postgres.DATABASE_URL,
+	max: 100,
+	min: 0,
+	idleTimeoutMillis: 30000,
+	connectionTimeoutMillis: 5000, // Fail fast instead of 60s
+	maxUses: 7500, // Recycle connections periodically
+});
+const adapter = new PrismaPg(pool);
+export const prisma = new PrismaClient({ adapter });
 export const redis = new Redis(
 	config.redis.REDIS_PORT,
 	config.redis.REDIS_HOST
