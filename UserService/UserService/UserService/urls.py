@@ -19,6 +19,7 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
+from UserService.health_check import *
 
 
 schema_view = get_schema_view(
@@ -41,4 +42,8 @@ urlpatterns = [
     path('api/v1/', include('CustomUser.urls')),
     path('api/v1/', include('AuthenticationJWT.urls')),
     path('api/v1/', include('TripService.urls')),
+    path('health', health_check, name='health_check'),
+    path('health/detailed', detailed_health_check, name='detailed_health'),
+    path('health/ready', readiness_check, name='readiness_check'),
+    path('health/live', liveness_check, name='liveness_check'),
 ]
