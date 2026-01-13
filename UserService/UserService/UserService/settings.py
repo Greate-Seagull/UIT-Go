@@ -87,16 +87,48 @@ WSGI_APPLICATION = 'UserService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Common database options
+DB_OPTIONS = {
+    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    'charset': 'utf8mb4',
+    'connect_timeout': 10,
+}
+
 DATABASES = {
+    # MASTER DATABASE - For all write operations (INSERT, UPDATE, DELETE)
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('USER_SERVICE_DB_NAME'),
         'USER': os.environ.get('USER_SERVICE_DB_USER'),
         'PASSWORD': os.environ.get('USER_SERVICE_DB_PASSWORD'),
-        'PORT': os.environ.get('USER_SERVICE_DB_PORT'),
-        'HOST': os.environ.get('USER_SERVICE_DB_HOST')
-    }
+        'HOST': os.environ.get('USER_SERVICE_DB_HOST', 'mysql-master'),
+        'PORT': os.environ.get('USER_SERVICE_DB_PORT', '3306'),
+        'OPTIONS': DB_OPTIONS,
+        'CONN_MAX_AGE': 60,
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+    },
+    
+    # SLAVE DATABASE - For all read operations (SELECT)
+    'slave': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('USER_SERVICE_DB_NAME'),
+        'USER': os.environ.get('USER_SERVICE_DB_USER'),
+        'PASSWORD': os.environ.get('USER_SERVICE_DB_PASSWORD'),
+        'HOST': os.environ.get('USER_SERVICE_DB_SLAVE_HOST', 'mysql-slave'),
+        'PORT': os.environ.get('USER_SERVICE_DB_SLAVE_PORT', '3306'),
+        'OPTIONS': DB_OPTIONS,
+        'CONN_MAX_AGE': 60,
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+        'TEST': {
+            'MIRROR': 'default',  # Use master for testing
+        },
+    },
 }
+
+# Database Router for Read/Write Splitting
+DATABASE_ROUTERS = ['UserService.database_router.MasterSlaveRouter']
 
 
 # Password validation
@@ -192,7 +224,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://ec2-13-215-60-142.ap-southeast-1.compute.amazonaws.com:8000',
+    'http://ec2-13-215-60-142.ap-southeast-1.compute.amazonaws.com:8000',
 ]
 
 

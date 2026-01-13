@@ -1,65 +1,260 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker Compose reference guide at
-# https://docs.docker.com/go/compose-spec-reference/
-
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
-  server:
-    build:
-      context: .
-    ports:
-      - 8000:8000
-
-    env_file:
-      - UserService/.env
-    volumes:
-      - .:/app 
-    
-   
-
-    depends_on:
-      - redis
-    
-  redis:
-    image: redis:latest
+  # Nginx Load Balancer
+  nginx-loadbalancer:
+    image: nginx:alpine
+    container_name: nginx-lb
     restart: always
     ports:
-      - 6379:6379
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - app-network
+    depends_on:
+      - server-1
+      - server-2
+      - server-3
+      - server-4
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
+  # MySQL Master (cho write operations)
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_change_me}
+      MYSQL_DATABASE: ${USER_SERVICE_DB_NAME:-userservice}
+      MYSQL_USER: ${USER_SERVICE_DB_USER:-django_user}
+      MYSQL_PASSWORD: ${USER_SERVICE_DB_PASSWORD:-django_password}
+    volumes:
+      - mysql-master-data:/var/lib/mysql
+      - ./mysql/master/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/logs/master:/var/log/mysql
+    ports:
+      - "3308:3306"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password_change_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --max-connections=2000
 
+  # MySQL Slave (cho read operations)
+  mysql-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_change_me}
+      MYSQL_DATABASE: ${USER_SERVICE_DB_NAME:-userservice}
+    volumes:
+      - mysql-slave-data:/var/lib/mysql
+      - ./mysql/slave/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/logs/slave:/var/log/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password_change_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --server-id=2
+      - --max-connections=2000
+
+  # Redis cache
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+  # Django application server 1
+  server-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-app-1
+    restart: always
+    expose:
+      - "8000"
+    env_file:
+      - UserService/.env
+    environment:
+      # Master database (for writes)
+      USER_SERVICE_DB_HOST: mysql-master
+      USER_SERVICE_DB_PORT: 3306
+      # Slave database (for reads)
+      USER_SERVICE_DB_SLAVE_HOST: mysql-slave
+      USER_SERVICE_DB_SLAVE_PORT: 3306
+      # Redis
+      HOST_REDIS: redis
+      PORT_REDIS: 6379
+      # Server identification
+      SERVER_ID: "1"
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Django application server 2
+  server-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-app-2
+    restart: always
+    expose:
+      - "8000"
+    env_file:
+      - UserService/.env
+    environment:
+      USER_SERVICE_DB_HOST: mysql-master
+      USER_SERVICE_DB_PORT: 3306
+      USER_SERVICE_DB_SLAVE_HOST: mysql-slave
+      USER_SERVICE_DB_SLAVE_PORT: 3306
+      HOST_REDIS: redis
+      PORT_REDIS: 6379
+      SERVER_ID: "2"
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Django application server 3
+  server-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-app-3
+    restart: always
+    expose:
+      - "8000"
+    env_file:
+      - UserService/.env
+    environment:
+      USER_SERVICE_DB_HOST: mysql-master
+      USER_SERVICE_DB_PORT: 3306
+      USER_SERVICE_DB_SLAVE_HOST: mysql-slave
+      USER_SERVICE_DB_SLAVE_PORT: 3306
+      HOST_REDIS: redis
+      PORT_REDIS: 6379
+      SERVER_ID: "3"
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Django application server 4
+  server-4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-app-4
+    restart: always
+    expose:
+      - "8000"
+    env_file:
+      - UserService/.env
+    environment:
+      USER_SERVICE_DB_HOST: mysql-master
+      USER_SERVICE_DB_PORT: 3306
+      USER_SERVICE_DB_SLAVE_HOST: mysql-slave
+      USER_SERVICE_DB_SLAVE_PORT: 3306
+      HOST_REDIS: redis
+      PORT_REDIS: 6379
+      SERVER_ID: "4"
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-master-data:
+    driver: local
+  mysql-slave-data:
+    driver: local
+  redis-data:
+    driver: local

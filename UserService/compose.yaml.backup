@@ -1,0 +1,118 @@
+services:
+  # MySQL Master (cho write operations)
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_change_me}
+      MYSQL_DATABASE: ${USER_SERVICE_DB_NAME:-userservice}
+      MYSQL_USER: ${USER_SERVICE_DB_USER:-django_user}
+      MYSQL_PASSWORD: ${USER_SERVICE_DB_PASSWORD:-django_password}
+    volumes:
+      - mysql-master-data:/var/lib/mysql
+      - ./mysql/master/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/logs/master:/var/log/mysql
+    ports:
+      - "3308:3306"  # Đổi từ 3306 sang 3308
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password_change_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --server-id=1
+      - --log-bin=mysql-bin
+
+  # MySQL Slave (cho read operations)
+  mysql-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789 
+      MYSQL_DATABASE: userservice 
+    volumes:
+      - mysql-slave-data:/var/lib/mysql
+      - ./mysql/slave/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/logs/slave:/var/log/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password_change_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --server-id=2
+
+  # Redis cache
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Django application
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-app
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - UserService/.env
+    environment:
+      # Master database (for writes)
+      USER_SERVICE_DB_HOST: mysql-master
+      USER_SERVICE_DB_PORT: 3306
+      # Slave database (for reads)
+      USER_SERVICE_DB_SLAVE_HOST: mysql-slave
+      USER_SERVICE_DB_SLAVE_PORT: 3306
+      # Redis
+      HOST_REDIS: redis
+      PORT_REDIS: 6379
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-master-data:
+    driver: local
+  mysql-slave-data:
+    driver: local
+  redis-data:
+    driver: local
