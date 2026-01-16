@@ -65,3 +65,26 @@ resource "azurerm_lb_rule" "https" {
   probe_id                       = azurerm_lb_probe.http.id
   idle_timeout_in_minutes        = 4
 }
+
+# Health Probe - HTTP
+resource "azurerm_lb_probe" "grpc" {
+  name                = "grpc-probe"
+  loadbalancer_id     = azurerm_lb.main.id
+  protocol            = "Tcp"
+  port                = 50051
+  interval_in_seconds = var.health_probe_interval
+  number_of_probes = 2
+}
+
+# Load Balancer Rule - gRPC
+resource "azurerm_lb_rule" "rpgc" {
+  name                           = "grpc-rule"
+  loadbalancer_id                = azurerm_lb.main.id
+  protocol                       = "Tcp"
+  frontend_port                  = 50051
+  backend_port                   = 50051
+  frontend_ip_configuration_name = "LoadBalancerFrontEnd"
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.main.id]
+  probe_id                       = azurerm_lb_probe.grpc.id
+  idle_timeout_in_minutes        = 4
+}

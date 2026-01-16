@@ -46,7 +46,7 @@ export class SignInUsecase {
 				throw Error("Invalid username or password");
 			}
 
-			const isValidPassword = this.passwordService.comparePassword(
+			const isValidPassword = await this.passwordService.comparePassword(
 				input.password,
 				account.password
 			);

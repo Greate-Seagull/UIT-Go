@@ -1,5 +1,0 @@
-level=error msg=" Authentication failed (attempt 1/3)" source=console
-level=error msg=" Authentication failed (attempt 2/3)" source=console
-level=error msg=" Authentication failed (attempt 3/3)" source=console
-level=error msg=" Max auth attempts reached, VU will idle" source=console
-level=error msg="thresholds on metrics 'auth_duration, auth_errors, errors, http_req_duration, http_req_failed, position_fetch_duration, position_fetch_success, position_update_duration' have been crossed"

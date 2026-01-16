@@ -1,8 +1,7 @@
-import Redis from "ioredis";
-import { logger } from "../logger/pino.logger";
+import Redis, { Cluster } from "ioredis";
 
 export class RedisCache {
-	constructor(private readonly client: Redis) {}
+	constructor(private readonly client: Cluster) {}
 
 	async get<T>(key: string): Promise<T | null> {
 		const data = await this.client.get(key);

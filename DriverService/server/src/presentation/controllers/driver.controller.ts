@@ -8,3 +8,4 @@ export const updatePositionProcedure = trpc.procedure
 		const result = await updatePositionUsecase.execute(input as any);
 		return result;
 	});
+

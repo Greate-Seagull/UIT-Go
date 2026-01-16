@@ -50,6 +50,21 @@ resource "azurerm_network_security_rule" "https" {
   network_security_group_name = azurerm_network_security_group.app.name
 }
 
+# gRPC Rule
+resource "azurerm_network_security_rule" "gprc" {
+  name                        = "AllowgRPC"
+  priority                    = 1004
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "50051"
+  source_address_prefixes     = var.allowed_grpc_ips
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.app.name
+}
+
 # Associate NSG with subnet
 resource "azurerm_subnet_network_security_group_association" "app" {
   subnet_id                 = var.app_subnet_id

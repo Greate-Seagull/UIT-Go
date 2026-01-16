@@ -20,5 +20,8 @@ exports.config = {
         SECRET: String(process.env.SECRET),
         EXPIRY: String(process.env.EXPIRY),
     },
+    logs: {
+        DIR: String(process.env.LOG_DIR),
+    }
 };
 //# sourceMappingURL=config.js.map

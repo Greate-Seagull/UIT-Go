@@ -56,6 +56,10 @@ variable "allowed_http_ips" {
   type = set(string)
 }
 
+variable "allowed_grpc_ips" {
+  type = set(string)
+}
+
 # Load balancer
 variable "health_probe_path" {
   type = string

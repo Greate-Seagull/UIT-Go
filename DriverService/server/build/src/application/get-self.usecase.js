@@ -20,32 +20,25 @@ class GetSelfInfoUsecase {
         this.driverRepo = driverRepo;
     }
     async execute(input) {
-        pino_logger_1.logger.info("GetDriverUseCase: Start", {
-            input: { authId: input.authId },
+        pino_logger_1.logger.info("Gettting self started", {
+            driverId: input.authId,
         });
         try {
             const parsedInput = inputSchema.parse(input);
-            pino_logger_1.logger.debug("GetDriverUseCase: Input validated", {
-                authId: parsedInput.authId,
-            });
-            pino_logger_1.logger.debug("GetDriverUseCase: Fetching driver from repository", {
-                driverId: parsedInput.authId,
-            });
             const driver = await this.driverRepo.getById(parsedInput.authId);
             if (!driver) {
-                pino_logger_1.logger.warn("GetDriverUseCase: Driver not found", {
+                pino_logger_1.logger.warn("Driver not found", {
                     driverId: parsedInput.authId,
                 });
                 throw new Error("Driver not found");
             }
-            pino_logger_1.logger.info("GetDriverUseCase: Success", {
+            pino_logger_1.logger.info("Getting self completed", {
                 driverId: driver.id,
-                name: driver.name,
             });
             return exports.outputSchema.parse(driver);
         }
         catch (error) {
-            pino_logger_1.logger.error("GetDriverUseCase: Failed", {
+            pino_logger_1.logger.error("Getting self failed", {
                 error: error.message,
                 stack: error.stack,
             });

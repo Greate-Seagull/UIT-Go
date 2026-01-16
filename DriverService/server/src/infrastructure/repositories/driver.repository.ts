@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Driver, driverSchema } from "../../domain/entities/driver.entity";
 import { Transaction } from "./transaction";
-import { logger } from "../logger/pino.logger";
 import { RedisCache } from "../cache/redis.cache";
 import { normalizeCachedObject } from "../cache/normalized-cache";
 import { buildQuery, toPersistence } from "./buildSqlQuery";

@@ -25,16 +25,14 @@ class AcceptTripUsecase {
         this.transactionManager = transactionManager;
     }
     async execute(input) {
-        pino_logger_1.logger.info("Start AcceptTripUsecase.execute", {
-            usecase: "AcceptTrip",
+        pino_logger_1.logger.info("Accepting trip started", {
             driverId: input.authId,
             offerId: input.offerId,
         });
         try {
-            pino_logger_1.logger.debug("Fetching driver", { driverId: input.authId });
             const driver = await this.driverRepository.getById(input.authId);
             if (!driver) {
-                pino_logger_1.logger.error("Driver not found", {
+                pino_logger_1.logger.warn("Driver not found", {
                     driverId: input.authId,
                 });
                 throw Error(`Cannot find driver with id: ${input.authId}`);
@@ -46,34 +44,20 @@ class AcceptTripUsecase {
                 });
                 throw Error(`The driver is not in ready state: ${driver.state}`);
             }
-            pino_logger_1.logger.info("Calling trip service to assign driver", {
-                driverId: input.authId,
-                offerId: input.offerId,
-            });
             const tripResult = await this.tripApiClient.assignDriver(input.authId, input.offerId);
-            pino_logger_1.logger.debug("Trip service assigned successfully", {
-                driverId: input.authId,
-                offerId: input.offerId,
-                tripResult,
-            });
             driver.state = driver_entity_1.DriverState.TRANSPORTING;
-            pino_logger_1.logger.info("Saving updated driver state", {
-                driverId: input.authId,
-                newState: driver.state,
-            });
             const updatedDriver = await this.transactionManager.transaction(async (transaction) => {
                 return await this.driverRepository.save(transaction, driver);
             });
             let output = new AcceptTripUsecaseOutput(updatedDriver.state);
-            pino_logger_1.logger.info("AcceptTripUsecase completed", {
+            pino_logger_1.logger.info("Accepting trip completed", {
                 driverId: input.authId,
                 finalState: updatedDriver.state,
             });
             return output;
         }
         catch (err) {
-            pino_logger_1.logger.error("AcceptTripUsecase failed", {
-                usecase: "AcceptTrip",
+            pino_logger_1.logger.error("Accepting trip failed", {
                 driverId: input.authId,
                 offerId: input.offerId,
                 error: err.message,

@@ -1,1 +1,1 @@
-k6 run .\claude-test-v4.js > stress-test-result.txt 2> stress-test-logs.txt
+k6 run .\claude-test-v6.js > stress-test-result.txt 2> stress-test-logs.txt

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.controller = controller;
-const local_request_queue_1 = require("../../infrastructure/request-queue/local.request-queue");
 const pino_logger_1 = require("../../infrastructure/logger/pino.logger");
+const composition_root_1 = require("../../composition-root");
 function controller(usecase) {
     return async (req, res) => {
         const input = {
@@ -11,34 +11,13 @@ function controller(usecase) {
             ...req.query,
             authId: req.authId,
         };
-        pino_logger_1.logger.debug("Incoming request", {
-            usecase: usecase.constructor.name,
-            input,
-        });
         try {
-            const result = await new Promise((resolve, reject) => {
-                const ok = local_request_queue_1.requestQueue.push({
-                    usecase,
-                    request: input,
-                    resolve,
-                    reject,
-                });
-                if (!ok) {
-                    pino_logger_1.logger.warn("Queue is full, rejecting request", {
-                        usecase: usecase.constructor.name,
-                    });
-                    return reject(new Error("Server overloaded"));
-                }
-                else {
-                    pino_logger_1.logger.debug("Request queued", {
-                        usecase: usecase.constructor.name,
-                    });
-                }
+            const job = await composition_root_1.messageQueue.add({
+                request: input,
+                usecaseId: usecase.constructor.name,
             });
-            pino_logger_1.logger.info("Request completed successfully", {
-                usecase: usecase.constructor.name,
-                result,
-            });
+            const result = await job.waitUntilFinished(composition_root_1.messageQueue.getQueueEvents());
+            console.log(result);
             res.jsend.success(result);
         }
         catch (error) {

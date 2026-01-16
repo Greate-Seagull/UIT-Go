@@ -1,0 +1,2 @@
+1982,level=error msg=" GetPosition error: Driver doesn't exist or not in ready state" source=console
+1,level=error msg="thresholds on metrics 'auth_duration, errors, grpc_req_duration, position_fetch_duration, position_update_duration' have been crossed"

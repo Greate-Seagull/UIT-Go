@@ -1,12 +1,11 @@
-import Redis from "ioredis";
+import { Cluster } from "ioredis";
 import { DriverPosition } from "../../domain/entities/driver-position.entity";
-import { logger } from "../../infrastructure/logger/pino.logger";
 import { toPersistence } from "./buildSqlQuery";
 
 export class DriverPositionRepository {
 	public static readonly GEO_KEY = "driver_positions";
 
-	constructor(private readonly redis: Redis) {}
+	constructor(private readonly redis: Cluster) {}
 
 	async getById(id: any): Promise<any> {
 		let persistences = await this.redis.geopos(
@@ -23,7 +22,7 @@ export class DriverPositionRepository {
 		return DriverPosition.rehydrate(row);
 	}
 
-	async save(entity: any): Promise<any> {
+	async save(entity: any): Promise<void> {
 		const persistence = toPersistence(entity);
 		await this.redis.geoadd(
 			DriverPositionRepository.GEO_KEY,
@@ -31,13 +30,6 @@ export class DriverPositionRepository {
 			persistence.lat,
 			entity.id
 		);
-
-		const saved = await this.getById(entity.id);
-		return saved;
-	}
-
-	async expire(entity: any, expiryInMinute: number): Promise<void> {
-		await this.redis.expire(entity.id as any, 60 * expiryInMinute);
 	}
 
 	async find(lat: any, long: any, radiusMeters: any): Promise<any> {

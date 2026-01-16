@@ -1,0 +1,26 @@
+syntax = "proto3";
+package driver.v1;
+
+service DriverService {
+    rpc UpdatePosition(UpdatePositionRequest) returns (UpdatePositionResponse);
+    rpc GetPosition(GetPositionRequest) returns (GetPositionResponse);
+}
+
+message UpdatePositionRequest {
+    int32 id = 1;
+    double lat = 2;
+    double long = 3;
+}
+
+message UpdatePositionResponse {
+    // This is intentionally empty
+}
+
+message GetPositionRequest {
+    int32 id = 1;
+}
+
+message GetPositionResponse {
+    double lat = 1;
+    double long = 2;
+}

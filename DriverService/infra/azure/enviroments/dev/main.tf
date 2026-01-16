@@ -71,6 +71,7 @@ module "security" {
 
     allowed_ssh_ips = var.allowed_ssh_ips
     allowed_http_ips = var.allowed_http_ips
+    allowed_grpc_ips = var.allowed_grpc_ips
 
     tags = local.common_tags
 }

@@ -7,9 +7,7 @@ const zod_1 = require("zod");
 exports.updatePositionProcedure = trpc_1.trpc.procedure
     .input(zod_1.z.object({ id: zod_1.z.number(), lat: zod_1.z.number(), long: zod_1.z.number() }))
     .mutation(async ({ input }) => {
-    console.log("Call API POST trpc/drivers.updatePosition");
     const result = await composition_root_1.updatePositionUsecase.execute(input);
-    console.log("Complete API POST trpc/drivers.updatePosition");
     return result;
 });
 //# sourceMappingURL=driver.controller.js.map

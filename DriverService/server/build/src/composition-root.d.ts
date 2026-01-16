@@ -1,5 +1,8 @@
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import Redis from "ioredis";
+import { JobTable } from "./infrastructure/cache/job-table";
 import { StartAcceptingUsecase } from "./application/start-accepting.usecase";
 import { DriverRepository } from "./infrastructure/repositories/driver.repository";
 import { AcceptTripUsecase } from "./application/accept-trip.usecase";
@@ -14,9 +17,16 @@ import { SignUpUseCase } from "./application/sign-up.usecase";
 import { TokenService } from "./domain/service/encrypt.service";
 import { SignInUsecase } from "./application/sign-in.usecase";
 import { GetSelfInfoUsecase } from "./application/get-self.usecase";
-export declare const prisma: PrismaClient<import(".prisma/client").Prisma.PrismaClientOptions, never, import("@prisma/client/runtime/library").DefaultArgs>;
+import { BullmqRequestQueue } from "./infrastructure/request-queue/bullmq.request-queue";
+import { DriverGrpcController } from "./presentation/controllers/driver.grpc.controller";
+export declare const pool: Pool;
+export declare const prisma: PrismaClient<{
+    adapter: PrismaPg;
+}, never, import("@prisma/client/runtime/library").DefaultArgs>;
 export declare const redis: Redis;
 export declare const axiosClient: import("axios").AxiosInstance;
+export declare const jobTable: JobTable;
+export declare const messageQueue: BullmqRequestQueue;
 export declare const driverRepository: DriverRepository;
 export declare const driverPositionRepository: DriverPositionRepository;
 export declare const accountRepository: AccountRepository;
@@ -31,4 +41,5 @@ export declare const getPositionUsecase: GetPositionUsecase;
 export declare const signUpUsecase: SignUpUseCase;
 export declare const signInUsecase: SignInUsecase;
 export declare const getSelfInfoUsecase: GetSelfInfoUsecase;
+export declare const driverGrpcController: DriverGrpcController;
 //# sourceMappingURL=composition-root.d.ts.map

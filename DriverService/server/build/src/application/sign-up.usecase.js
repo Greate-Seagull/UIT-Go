@@ -30,38 +30,31 @@ class SignUpUseCase {
         this.tokenService = tokenService;
     }
     async execute(input) {
-        pino_logger_1.logger.info("SignUpUseCase: Start", { input });
+        pino_logger_1.logger.info("Signing up started", { username: input.username });
         try {
             const parsedInput = inputSchema.parse(input);
-            pino_logger_1.logger.debug("SignUpUseCase: Input validated", { parsedInput });
             const isSignedUp = await this.accountRepository.getByUsername(parsedInput.username);
             if (isSignedUp) {
-                pino_logger_1.logger.warn("SignUpUseCase: Username already exists", {
+                pino_logger_1.logger.warn("Username already exists", {
                     username: parsedInput.username,
                 });
                 throw Error("Driver has signed up");
             }
-            pino_logger_1.logger.debug("SignUpUseCase: Generating salt & password hash");
             const salt = this.passwordService.generateSalt();
             const passwordHash = this.passwordService.hashPassword(parsedInput.password, salt);
-            pino_logger_1.logger.debug("SignUpUseCase: Creating Driver entity");
             const driver = driver_entity_1.Driver.create(parsedInput);
-            pino_logger_1.logger.debug("SignUpUseCase: Saving Driver to repository");
             const savedDriver = await this.driverRepository.add(null, driver);
-            pino_logger_1.logger.debug("SignUpUseCase: Creating Account entity");
             const account = account_entity_1.Account.create({
                 username: parsedInput.username,
                 password: passwordHash,
                 salt: salt,
                 driverId: savedDriver.id,
             });
-            pino_logger_1.logger.debug("SignUpUseCase: Saving Account to repository");
             const savedAccount = await this.accountRepository.add(null, account);
-            pino_logger_1.logger.debug("SignUpUseCase: Generating JWT token");
             const accessJwt = this.tokenService.generateJwt({
                 id: account.driverId,
             });
-            pino_logger_1.logger.info("SignUpUseCase: Success", {
+            pino_logger_1.logger.info("Signing up completed", {
                 driverId: savedDriver.id,
                 accountId: savedAccount.id,
             });
@@ -71,7 +64,7 @@ class SignUpUseCase {
             });
         }
         catch (error) {
-            pino_logger_1.logger.error("SignUpUseCase: Failed", {
+            pino_logger_1.logger.error("Signing up failed", {
                 error: error.message,
                 stack: error.stack,
             });

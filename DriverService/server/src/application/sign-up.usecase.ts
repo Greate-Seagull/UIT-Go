@@ -44,8 +44,8 @@ export class SignUpUseCase {
 				throw Error("Driver has signed up");
 			}
 
-			const salt = this.passwordService.generateSalt();
-			const passwordHash = this.passwordService.hashPassword(
+			const salt = await this.passwordService.generateSalt();
+			const passwordHash = await this.passwordService.hashPassword(
 				parsedInput.password,
 				salt
 			);

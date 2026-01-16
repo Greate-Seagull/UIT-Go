@@ -18,42 +18,28 @@ class RejectTripUsecase {
         this.tripApiClient = tripApiClient;
     }
     async execute(input) {
-        pino_logger_1.logger.info("Start RejectTripUsecase.execute", {
-            usecase: "RejectTrip",
+        pino_logger_1.logger.info("Rejecting trip started", {
             driverId: input.authId,
             offerId: input.offerId,
         });
         try {
-            pino_logger_1.logger.debug("Fetching driver", {
-                driverId: input.authId,
-            });
             const driver = await this.driverRepository.getById(input.authId);
             if (!driver) {
-                pino_logger_1.logger.error("Driver not found", {
+                pino_logger_1.logger.warn("Driver not found", {
                     driverId: input.authId,
                 });
                 throw Error(`Cannot find driver with id: ${input.authId}`);
             }
-            pino_logger_1.logger.info("Calling Trip API to reject offer", {
-                driverId: input.authId,
-                offerId: input.offerId,
-            });
             const tripResult = await this.tripApiClient.reject(input.authId, input.offerId);
-            pino_logger_1.logger.debug("Trip offer rejected successfully", {
-                driverId: input.authId,
-                offerId: input.offerId,
-                tripResult,
-            });
             const output = new RejectTripUsecaseOutput();
-            pino_logger_1.logger.info("RejectTripUsecase completed", {
+            pino_logger_1.logger.info("Rejecting trip completed", {
                 driverId: input.authId,
                 offerId: input.offerId,
             });
             return output;
         }
         catch (err) {
-            pino_logger_1.logger.error("RejectTripUsecase failed", {
-                usecase: "RejectTrip",
+            pino_logger_1.logger.error("Rejecting trip failed", {
                 driverId: input.authId,
                 offerId: input.offerId,
                 error: err.message,

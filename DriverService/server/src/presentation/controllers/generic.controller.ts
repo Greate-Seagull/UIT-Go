@@ -1,7 +1,8 @@
-import { requestQueue } from "../../infrastructure/request-queue/local.request-queue";
 import { logger } from "../../infrastructure/logger/pino.logger";
+import { messageQueue } from "../../composition-root";
+import { Usecase } from "../../infrastructure/cache/job-table";
 
-export function controller(usecase: any) {
+export function controller(usecase: Usecase) {
 	return async (req: any, res: any) => {
 		const input = {
 			...(req.body || {}),
@@ -11,18 +12,14 @@ export function controller(usecase: any) {
 		};
 
 		try {
-			const result = await new Promise((resolve, reject) => {
-				const ok = requestQueue.push({
-					usecase,
-					request: input,
-					resolve,
-					reject,
-				});
-
-				if (!ok) {
-					return reject(new Error("Server overloaded"));
-				}
+			const job = await messageQueue.add({
+				request: input,
+				usecaseId: usecase.constructor.name,
 			});
+			const result = await job.waitUntilFinished(
+				messageQueue.getQueueEvents()
+			);
+			console.log(result);
 
 			res.jsend.success(result);
 		} catch (error: any) {

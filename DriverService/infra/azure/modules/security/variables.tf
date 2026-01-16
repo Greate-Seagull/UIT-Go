@@ -28,6 +28,10 @@ variable "allowed_http_ips" {
   type = set(string)
 }
 
+variable "allowed_grpc_ips" {
+  type = set(string)
+}
+
 variable "app_subnet_id" {
   type = string
 }

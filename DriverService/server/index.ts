@@ -1,15 +1,57 @@
+import http from "http";
+import * as grpc from "@grpc/grpc-js";
+
 import app from "./src/app";
-import { requestQueue } from "./src/infrastructure/request-queue/local.request-queue";
-import { workerLoop } from "./src/infrastructure/request-queue/worker";
-import { startMonitoring } from "./src/presentation/monitoring/monitorings";
+import grpcServer from "./src/grpc";
 
-const PORT = 3000;
+const HTTP_PORT = 3000;
+const GRPC_PORT = 50051;
 
-startMonitoring();
-workerLoop(requestQueue);
+console.log(`Version 1.0.10`);
 
-app.listen(PORT, (error: any) => {
-	if (error) throw error;
-	console.log(`Version 1.0.4`);
-	console.log(`Listening to http://localhost:${PORT}`);
+// --- HTTP SERVER SETUP ---
+const httpServer = http.createServer(app);
+httpServer.maxConnections = 10000;
+httpServer.keepAliveTimeout = 65000;
+httpServer.headersTimeout = 66000;
+
+httpServer.listen(HTTP_PORT, () => {
+	console.log(`HTTP server running on port ${HTTP_PORT}`);
+});
+
+httpServer.on("error", (error: any) => {
+	throw error;
+});
+
+// --- gRPC SERVER SETUP ---
+grpcServer.bindAsync(
+	`0.0.0.0:${GRPC_PORT}`,
+	grpc.ServerCredentials.createInsecure(),
+	(error, port) => {
+		if (error) {
+			console.error("Failed to start server:", error);
+			return;
+		}
+		console.log(`gRPC server running on port ${port}`);
+	}
+);
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+	console.log("SIGTERM received, shutting down gracefully...");
+
+	httpServer.close(() => {
+		console.log("HTTP server closed");
+	});
+
+	grpcServer.tryShutdown(() => {
+		console.log("gRPC server closed");
+		process.exit(0);
+	});
+
+	setTimeout(() => {
+		console.error("Forced shutdown after timeout");
+		grpcServer.forceShutdown();
+		process.exit(1);
+	}, 30000);
 });

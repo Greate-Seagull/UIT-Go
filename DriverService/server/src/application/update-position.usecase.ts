@@ -22,32 +22,14 @@ export class UpdatePositionUsecase {
 			driverId: input.id,
 		});
 
-		try {
-			let driverPosition = DriverPosition.create(input);
+		let driverPosition = DriverPosition.create(input);
 
-			const updated = await this.driverPositionRepository.save(
-				driverPosition
-			);
+		await this.driverPositionRepository.save(driverPosition);
 
-			await this.driverPositionRepository.expire(updated, 5);
+		logger.info("Updating position completed", {
+			driverId: input.id,
+		});
 
-			const output = new UpdatePositionUsecaseOutput(
-				updated.lat,
-				updated.long
-			);
-
-			logger.info("Updating position completed", {
-				driverId: input.id,
-			});
-
-			return output;
-		} catch (err: any) {
-			logger.error("Updating position failed", {
-				driverId: input.id,
-				error: err.message,
-				stack: err.stack,
-			});
-			throw err;
-		}
+		return {};
 	}
 }

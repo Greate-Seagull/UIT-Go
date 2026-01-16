@@ -17,5 +17,8 @@ export declare const config: {
         SECRET: string;
         EXPIRY: string;
     };
+    logs: {
+        DIR: string;
+    };
 };
 //# sourceMappingURL=config.d.ts.map

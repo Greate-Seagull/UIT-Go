@@ -19,35 +19,26 @@ export class GetPositionUsecase {
 			driverId: input.id,
 		});
 
-		try {
-			const driverPosition = await this.driverPositionRepository.getById(
-				input.id
-			);
+		const driverPosition = await this.driverPositionRepository.getById(
+			input.id
+		);
 
-			if (!driverPosition) {
-				logger.warn("Driver position not found", {
-					driverId: input.id,
-				});
-				throw Error("Driver doesn't exist or not in ready state");
-			}
-
-			const output = new GetPositionUsecaseOutput(
-				driverPosition.lat,
-				driverPosition.long
-			);
-
-			logger.info("Getting position completed", {
+		if (!driverPosition) {
+			logger.warn("Driver position not found", {
 				driverId: input.id,
 			});
-
-			return output;
-		} catch (err: any) {
-			logger.error("Getting position failed", {
-				driverId: input.id,
-				error: err.message,
-				stack: err.stack,
-			});
-			throw err;
+			throw Error("Driver doesn't exist or not in ready state");
 		}
+
+		const output = new GetPositionUsecaseOutput(
+			driverPosition.lat,
+			driverPosition.long
+		);
+
+		logger.info("Getting position completed", {
+			driverId: input.id,
+		});
+
+		return output;
 	}
 }

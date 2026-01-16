@@ -4,12 +4,60 @@ services:
         container_name: server
         restart: always
         depends_on:
-            - redis
+            - redis-node1
+            - redis-node2
+            - redis-node3
         env_file:
             - .env
         ports:
             - "80:3000"
+            - "50051:50051"
+        volumes:
+            - ./logs:/app/logs
+        networks:
+            - redis-net
 
-    redis:
-        image: redis:latest
-        container_name: redis
+    redis-node1:
+        image: redis:7
+        command: redis-server /usr/local/etc/redis/redis.conf --port 6379
+        ports:
+            - "6379:6379" # Client access
+            - "16379:16379" # Cluster bus
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - redis-node1-data:/data
+        networks:
+            - redis-net
+
+    redis-node2:
+        image: redis:7
+        command: redis-server /usr/local/etc/redis/redis.conf --port 6380
+        ports:
+            - "6380:6380" # Client access
+            - "16380:16380" # Cluster bus
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - redis-node2-data:/data
+        networks:
+            - redis-net
+
+    redis-node3:
+        image: redis:7
+        command: redis-server /usr/local/etc/redis/redis.conf --port 6381
+        ports:
+            - "6381:6381" # Client access
+            - "16381:16381" # Cluster bus
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - redis-node3-data:/data
+        networks:
+            - redis-net
+
+networks:
+    redis-net:
+        driver: bridge
+
+volumes:
+    redis-node1-data:
+    redis-node2-data:
+    redis-node3-data:

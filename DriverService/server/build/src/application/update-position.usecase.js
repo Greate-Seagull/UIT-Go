@@ -24,44 +24,22 @@ class UpdatePositionUsecase {
         this.driverPositionRepository = driverPositionRepository;
     }
     async execute(input) {
-        pino_logger_1.logger.info("Start UpdatePositionUsecase.execute", {
-            usecase: "UpdatePosition",
+        pino_logger_1.logger.info("Updating position started", {
             driverId: input.id,
-            lat: input.lat,
-            long: input.long,
         });
         try {
-            pino_logger_1.logger.debug("Creating/updating driver position", {
-                driverId: input.id,
-                lat: input.lat,
-                long: input.long,
-            });
             let driverPosition = driver_position_entity_1.DriverPosition.create(input);
             const updated = await this.driverPositionRepository.save(driverPosition);
-            pino_logger_1.logger.debug("Driver position saved", {
-                driverId: input.id,
-                lat: updated.lat,
-                long: updated.long,
-            });
             await this.driverPositionRepository.expire(updated, 5);
-            pino_logger_1.logger.debug("Driver position expiration set", {
-                driverId: input.id,
-                ttlMinutes: 5,
-            });
             const output = new UpdatePositionUsecaseOutput(updated.lat, updated.long);
-            pino_logger_1.logger.info("UpdatePositionUsecase completed", {
+            pino_logger_1.logger.info("Updating position completed", {
                 driverId: input.id,
-                lat: output.lat,
-                long: output.long,
             });
             return output;
         }
         catch (err) {
-            pino_logger_1.logger.error("UpdatePositionUsecase failed", {
-                usecase: "UpdatePosition",
+            pino_logger_1.logger.error("Updating position failed", {
                 driverId: input.id,
-                lat: input.lat,
-                long: input.long,
                 error: err.message,
                 stack: err.stack,
             });

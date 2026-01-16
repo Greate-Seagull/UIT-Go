@@ -2,9 +2,10 @@ import { performance } from "perf_hooks";
 import { pool } from "../../composition-root";
 import * as fs from "fs";
 import * as path from "path";
+import { config } from "../../config/config";
 
 // Create logs directory if it doesn't exist
-const logsDir = path.join(__dirname, "../../logs");
+const logsDir = config.logs.DIR || path.join(__dirname, "../../logs");
 if (!fs.existsSync(logsDir)) {
 	fs.mkdirSync(logsDir, { recursive: true });
 }
@@ -15,32 +16,29 @@ const poolLogFile = path.join(logsDir, `pool-monitoring-${timestamp}.csv`);
 const memoryLogFile = path.join(logsDir, `memory-monitoring-${timestamp}.csv`);
 const eventLoopLogFile = path.join(
 	logsDir,
-	`event-loop-monitoring-${timestamp}.csv`,
+	`event-loop-monitoring-${timestamp}.csv`
 );
 
 // Initialize CSV files with headers
-fs.writeFileSync(
-	poolLogFile,
-	"Timestamp,TotalCount,IdleCount,WaitingCount\n",
-);
+fs.writeFileSync(poolLogFile, "Timestamp,TotalCount,IdleCount,WaitingCount\n");
 fs.writeFileSync(
 	memoryLogFile,
-	"Timestamp,HeapUsed_MB,HeapTotal_MB,External_MB,RSS_MB\n",
+	"Timestamp,HeapUsed_MB,HeapTotal_MB,External_MB,RSS_MB\n"
 );
 fs.writeFileSync(eventLoopLogFile, "Timestamp,Lag_MS\n");
 
 export const startMonitoring = () => {
 	// At application startup
-	console.log("═══════════════════════════════════════");
-	console.log("DATABASE POOL CONFIGURATION:");
-	console.log("Max connections:", pool.options.max);
-	console.log("Min connections:", pool.options.min);
-	console.log("Connection timeout:", pool.options.connectionTimeoutMillis);
-	console.log("═══════════════════════════════════════");
-	console.log(`Pool logs: ${poolLogFile}`);
-	console.log(`Memory logs: ${memoryLogFile}`);
-	console.log(`Event loop logs: ${eventLoopLogFile}`);
-	console.log("═══════════════════════════════════════");
+	// console.log("═══════════════════════════════════════");
+	// console.log("DATABASE POOL CONFIGURATION:");
+	// console.log("Max connections:", pool.options.max);
+	// console.log("Min connections:", pool.options.min);
+	// console.log("Connection timeout:", pool.options.connectionTimeoutMillis);
+	// console.log("═══════════════════════════════════════");
+	// console.log(`Pool logs: ${poolLogFile}`);
+	// console.log(`Memory logs: ${memoryLogFile}`);
+	// console.log(`Event loop logs: ${eventLoopLogFile}`);
+	// console.log("═══════════════════════════════════════");
 
 	// Write configuration to a separate file
 	const configFile = path.join(logsDir, `config-${timestamp}.txt`);
@@ -51,7 +49,7 @@ Max connections: ${pool.options.max}
 Min connections: ${pool.options.min}
 Connection timeout: ${pool.options.connectionTimeoutMillis}
 Test started: ${new Date().toISOString()}
-`,
+`
 	);
 
 	// Database connection pool monitoring (every 5 seconds)
@@ -65,12 +63,12 @@ Test started: ${new Date().toISOString()}
 		};
 
 		// Console output
-		console.log(poolData);
+		// console.log(poolData);
 
 		// CSV output
 		fs.appendFileSync(
 			poolLogFile,
-			`${now},${poolData.totalCount},${poolData.idleCount},${poolData.waitingCount}\n`,
+			`${now},${poolData.totalCount},${poolData.idleCount},${poolData.waitingCount}\n`
 		);
 	}, 5000);
 
@@ -83,12 +81,12 @@ Test started: ${new Date().toISOString()}
 
 		if (lag > 100) {
 			const timestamp = new Date().toISOString();
-			console.warn(`Event loop lag: ${Math.round(lag)}ms`);
+			// console.warn(`Event loop lag: ${Math.round(lag)}ms`);
 
 			// CSV output
 			fs.appendFileSync(
 				eventLoopLogFile,
-				`${timestamp},${Math.round(lag)}\n`,
+				`${timestamp},${Math.round(lag)}\n`
 			);
 		}
 	}, 1000);
@@ -106,17 +104,17 @@ Test started: ${new Date().toISOString()}
 		};
 
 		// Console output
-		console.log({
-			heapUsed: memoryData.heapUsed + "MB",
-			heapTotal: memoryData.heapTotal + "MB",
-			external: memoryData.external + "MB",
-			rss: memoryData.rss + "MB",
-		});
+		// console.log({
+		// 	heapUsed: memoryData.heapUsed + "MB",
+		// 	heapTotal: memoryData.heapTotal + "MB",
+		// 	external: memoryData.external + "MB",
+		// 	rss: memoryData.rss + "MB",
+		// });
 
 		// CSV output
 		fs.appendFileSync(
 			memoryLogFile,
-			`${now},${memoryData.heapUsed},${memoryData.heapTotal},${memoryData.external},${memoryData.rss}\n`,
+			`${now},${memoryData.heapUsed},${memoryData.heapTotal},${memoryData.external},${memoryData.rss}\n`
 		);
 	}, 10000);
 };

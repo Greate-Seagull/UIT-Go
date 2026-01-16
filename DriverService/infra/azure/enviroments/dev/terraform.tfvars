@@ -14,13 +14,14 @@ data_subnet_prefix   = ["10.0.2.0/24"]
 
 # Compute
 vm_size              = "Standard_B2ls_v2"
-vm_count             = 1
+vm_count             = 2
 vm_disk_size_gb      = 30
 admin_username       = "azureuser"
 
 # Security
-allowed_ssh_ips      = ["112.197.176.121/32"]
+allowed_ssh_ips      = ["0.0.0.0/0"]
 allowed_http_ips     = ["0.0.0.0/0"]
+allowed_grpc_ips     = ["0.0.0.0/0"]
 
 # Load balancer
 health_probe_path     = "/health"
