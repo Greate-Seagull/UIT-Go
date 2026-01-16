@@ -22,8 +22,7 @@ export class SearchDriverUsecase {
 	) {}
 
 	async execute(input: SearchDriverUsecaseInput) {
-		logger.info("Start SearchDriverUsecase.execute", {
-			usecase: "SearchDriver",
+		logger.info("Searching driver started", {
 			lat: input.lat,
 			lng: input.lng,
 			radiusMeters: input.radiusMeters,
@@ -46,21 +45,11 @@ export class SearchDriverUsecase {
 				throw Error(`Expect a positive limit but got: ${input.limit}`);
 			}
 
-			logger.debug("Searching drivers in radius", {
-				lat: input.lat,
-				lng: input.lng,
-				radiusMeters: input.radiusMeters,
-			});
-
 			const driverPositions = await this.driverPositionRepository.find(
 				input.lat,
 				input.lng,
 				input.radiusMeters
 			);
-
-			logger.debug("Drivers found", {
-				count: driverPositions.length,
-			});
 
 			const output = driverPositions.map(
 				(driverPos: any) =>
@@ -71,16 +60,14 @@ export class SearchDriverUsecase {
 					)
 			);
 
-			logger.info("SearchDriverUsecase completed", {
+			logger.info("Searching trip completed", {
 				requestLat: input.lat,
 				requestLng: input.lng,
-				resultCount: output.length,
 			});
 
 			return output;
 		} catch (err: any) {
-			logger.error("SearchDriverUsecase failed", {
-				usecase: "SearchDriver",
+			logger.error("Searching trip failed", {
 				lat: input.lat,
 				lng: input.lng,
 				radiusMeters: input.radiusMeters,

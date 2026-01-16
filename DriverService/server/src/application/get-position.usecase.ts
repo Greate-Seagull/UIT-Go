@@ -15,53 +15,30 @@ export class GetPositionUsecase {
 	) {}
 
 	async execute(input: GetPositionUsecaseInput) {
-		logger.info("Start GetPositionUsecase.execute", {
-			usecase: "GetPosition",
+		logger.info("Getting position started", {
 			driverId: input.id,
 		});
 
-		try {
-			logger.debug("Fetching driver position", {
+		const driverPosition = await this.driverPositionRepository.getById(
+			input.id
+		);
+
+		if (!driverPosition) {
+			logger.warn("Driver position not found", {
 				driverId: input.id,
 			});
-
-			const driverPosition = await this.driverPositionRepository.getById(
-				input.id
-			);
-
-			if (!driverPosition) {
-				logger.warn("Driver position not found", {
-					driverId: input.id,
-				});
-				throw Error("Driver doesn't exist or not in ready state");
-			}
-
-			logger.debug("Driver position retrieved", {
-				driverId: input.id,
-				lat: driverPosition.lat,
-				long: driverPosition.long,
-			});
-
-			const output = new GetPositionUsecaseOutput(
-				driverPosition.lat,
-				driverPosition.long
-			);
-
-			logger.info("GetPositionUsecase completed", {
-				driverId: input.id,
-				lat: output.lat,
-				long: output.long,
-			});
-
-			return output;
-		} catch (err: any) {
-			logger.error("GetPositionUsecase failed", {
-				usecase: "GetPosition",
-				driverId: input.id,
-				error: err.message,
-				stack: err.stack,
-			});
-			throw err;
+			throw Error("Driver doesn't exist or not in ready state");
 		}
+
+		const output = new GetPositionUsecaseOutput(
+			driverPosition.lat,
+			driverPosition.long
+		);
+
+		logger.info("Getting position completed", {
+			driverId: input.id,
+		});
+
+		return output;
 	}
 }

@@ -5,16 +5,19 @@ import { z } from "zod";
 export class PasswordService {
 	constructor(private readonly saltRound: number) {}
 
-	generateSalt() {
-		return bcrypt.genSaltSync(this.saltRound);
+	async generateSalt() {
+		return await bcrypt.genSalt(this.saltRound);
 	}
 
-	hashPassword(barePassword: string, salt: string): string {
-		return bcrypt.hashSync(barePassword, salt);
+	async hashPassword(barePassword: string, salt: string): Promise<string> {
+		return await bcrypt.hash(barePassword, salt);
 	}
 
-	comparePassword(barePassword: string, hashedPassword: string): boolean {
-		return bcrypt.compareSync(barePassword, hashedPassword);
+	async comparePassword(
+		barePassword: string,
+		hashedPassword: string
+	): Promise<boolean> {
+		return await bcrypt.compare(barePassword, hashedPassword);
 	}
 }
 

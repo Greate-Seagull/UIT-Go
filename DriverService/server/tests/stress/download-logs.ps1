@@ -1,0 +1,1 @@
+scp -r azureuser@4.194.48.154:/opt/deployment/app/logs D:\git-repo\backup\UIT-Go\DriverService\server\tests\stress
